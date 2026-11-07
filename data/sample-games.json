@@ -1,0 +1,661 @@
+{
+  "generatedAt": "sample",
+  "games": [
+    {
+      "id": 13,
+      "name": "CATAN",
+      "year": 1995,
+      "description": "Players settle an island, gathering and trading resources to build roads, settlements and cities.\n\nThe robber, the dice and some hard bargaining decide who reaches ten victory points first.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 3,
+        "max": 4
+      },
+      "playTime": {
+        "min": 60,
+        "max": 120
+      },
+      "minAge": 10,
+      "rating": 7.1,
+      "weight": 2.3,
+      "rank": 560,
+      "categories": [
+        "Negotiation",
+        "Economic"
+      ],
+      "mechanics": [
+        "Dice Rolling",
+        "Trading",
+        "Network and Route Building"
+      ],
+      "designers": [
+        "Klaus Teuber"
+      ],
+      "collections": [
+        "Klassiker"
+      ],
+      "featured": false,
+      "owner": "Anton",
+      "comment": null
+    },
+    {
+      "id": 822,
+      "name": "Carcassonne",
+      "year": 2000,
+      "description": "Draw a tile, place it next to the growing landscape and decide whether to claim a road, city, monastery or field with one of your followers.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 2,
+        "max": 5
+      },
+      "playTime": {
+        "min": 30,
+        "max": 45
+      },
+      "minAge": 7,
+      "rating": 7.4,
+      "weight": 1.9,
+      "rank": 230,
+      "categories": [
+        "City Building",
+        "Medieval",
+        "Territory Building"
+      ],
+      "mechanics": [
+        "Tile Placement",
+        "Area Majority / Influence"
+      ],
+      "designers": [
+        "Klaus-Jürgen Wrede"
+      ],
+      "collections": [
+        "Klassiker",
+        "Familj"
+      ],
+      "featured": false,
+      "owner": "Anton",
+      "comment": null
+    },
+    {
+      "id": 9209,
+      "name": "Ticket to Ride",
+      "year": 2004,
+      "description": "Collect sets of coloured train cards and claim railway routes across North America to complete your secret destination tickets.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 2,
+        "max": 5
+      },
+      "playTime": {
+        "min": 30,
+        "max": 60
+      },
+      "minAge": 8,
+      "rating": 7.4,
+      "weight": 1.8,
+      "rank": 240,
+      "categories": [
+        "Trains"
+      ],
+      "mechanics": [
+        "Set Collection",
+        "Network and Route Building",
+        "Hand Management"
+      ],
+      "designers": [
+        "Alan R. Moon"
+      ],
+      "collections": [
+        "Klassiker",
+        "Familj"
+      ],
+      "featured": false,
+      "owner": null,
+      "comment": "Bra första spel för nya spelare."
+    },
+    {
+      "id": 30549,
+      "name": "Pandemic",
+      "year": 2008,
+      "description": "Four diseases are spreading across the globe. Work together as a team of specialists to find all four cures before outbreaks get out of control.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 2,
+        "max": 4
+      },
+      "playTime": {
+        "min": 45,
+        "max": 45
+      },
+      "minAge": 8,
+      "rating": 7.5,
+      "weight": 2.4,
+      "rank": 150,
+      "categories": [
+        "Medical"
+      ],
+      "mechanics": [
+        "Cooperative Game",
+        "Action Points",
+        "Hand Management"
+      ],
+      "designers": [
+        "Matt Leacock"
+      ],
+      "collections": [
+        "Samarbete"
+      ],
+      "featured": false,
+      "owner": null,
+      "comment": null
+    },
+    {
+      "id": 178900,
+      "name": "Codenames",
+      "year": 2015,
+      "description": "Two spymasters give one-word clues that point to several words on the table. Their teams try to find their own agents and avoid the assassin.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 2,
+        "max": 8
+      },
+      "playTime": {
+        "min": 15,
+        "max": 15
+      },
+      "minAge": 14,
+      "rating": 7.6,
+      "weight": 1.3,
+      "rank": 120,
+      "categories": [
+        "Party Game",
+        "Word Game",
+        "Spies/Secret Agents"
+      ],
+      "mechanics": [
+        "Team-Based Game",
+        "Communication Limits"
+      ],
+      "designers": [
+        "Vlaada Chvátil"
+      ],
+      "collections": [
+        "Party"
+      ],
+      "featured": false,
+      "owner": null,
+      "comment": null
+    },
+    {
+      "id": 266192,
+      "name": "Wingspan",
+      "year": 2019,
+      "description": "Attract birds to your wildlife preserves. Each bird extends a chain of powerful combinations in one of your habitats – forest, grassland or wetland.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 1,
+        "max": 5
+      },
+      "playTime": {
+        "min": 40,
+        "max": 70
+      },
+      "minAge": 10,
+      "rating": 8,
+      "weight": 2.5,
+      "rank": 30,
+      "categories": [
+        "Animals",
+        "Card Game"
+      ],
+      "mechanics": [
+        "Engine Building",
+        "Hand Management",
+        "Dice Rolling"
+      ],
+      "designers": [
+        "Elizabeth Hargrave"
+      ],
+      "collections": [
+        "Favoriter"
+      ],
+      "featured": true,
+      "owner": "Anton",
+      "comment": "Kvällens favorit!"
+    },
+    {
+      "id": 230802,
+      "name": "Azul",
+      "year": 2017,
+      "description": "Draft colourful tiles from shared factories and arrange them on your palace wall. Leftover tiles cost points, so timing is everything.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 2,
+        "max": 4
+      },
+      "playTime": {
+        "min": 30,
+        "max": 45
+      },
+      "minAge": 8,
+      "rating": 7.7,
+      "weight": 1.8,
+      "rank": 75,
+      "categories": [
+        "Abstract Strategy",
+        "Renaissance"
+      ],
+      "mechanics": [
+        "Pattern Building",
+        "Set Collection",
+        "Drafting"
+      ],
+      "designers": [
+        "Michael Kiesling"
+      ],
+      "collections": [
+        "Familj",
+        "Favoriter"
+      ],
+      "featured": false,
+      "owner": null,
+      "comment": null
+    },
+    {
+      "id": 173346,
+      "name": "7 Wonders Duel",
+      "year": 2015,
+      "description": "A two-player take on building an ancient civilisation. Win by science, by military supremacy or on points after three ages.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 2,
+        "max": 2
+      },
+      "playTime": {
+        "min": 30,
+        "max": 30
+      },
+      "minAge": 10,
+      "rating": 8.1,
+      "weight": 2.2,
+      "rank": 20,
+      "categories": [
+        "Ancient",
+        "Card Game",
+        "City Building"
+      ],
+      "mechanics": [
+        "Drafting",
+        "Set Collection"
+      ],
+      "designers": [
+        "Antoine Bauza",
+        "Bruno Cathala"
+      ],
+      "collections": [
+        "Två spelare"
+      ],
+      "featured": false,
+      "owner": null,
+      "comment": null
+    },
+    {
+      "id": 167791,
+      "name": "Terraforming Mars",
+      "year": 2016,
+      "description": "Corporations compete to make Mars habitable by raising temperature and oxygen and placing oceans, while building engines of cards and resources.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 1,
+        "max": 5
+      },
+      "playTime": {
+        "min": 120,
+        "max": 120
+      },
+      "minAge": 12,
+      "rating": 8.4,
+      "weight": 3.3,
+      "rank": 7,
+      "categories": [
+        "Science Fiction",
+        "Space Exploration",
+        "Economic"
+      ],
+      "mechanics": [
+        "Engine Building",
+        "Hand Management",
+        "Tile Placement"
+      ],
+      "designers": [
+        "Jacob Fryxelius"
+      ],
+      "collections": [
+        "Tunga kvällar"
+      ],
+      "featured": true,
+      "owner": null,
+      "comment": "Avsätt en hel kväll."
+    },
+    {
+      "id": 39856,
+      "name": "Dixit",
+      "year": 2008,
+      "description": "The storyteller describes one of their dream-like picture cards. Everyone else tries to match it – but the clue shouldn't be too obvious, or too obscure.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 3,
+        "max": 6
+      },
+      "playTime": {
+        "min": 30,
+        "max": 30
+      },
+      "minAge": 8,
+      "rating": 7.3,
+      "weight": 1.2,
+      "rank": 330,
+      "categories": [
+        "Party Game",
+        "Card Game"
+      ],
+      "mechanics": [
+        "Storytelling",
+        "Voting"
+      ],
+      "designers": [
+        "Jean-Louis Roubira"
+      ],
+      "collections": [
+        "Party",
+        "Familj"
+      ],
+      "featured": false,
+      "owner": null,
+      "comment": null
+    },
+    {
+      "id": 148228,
+      "name": "Splendor",
+      "year": 2014,
+      "description": "As a Renaissance gem merchant, collect gem tokens to buy mines, transport and shops that let you buy ever more prestigious cards.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 2,
+        "max": 4
+      },
+      "playTime": {
+        "min": 30,
+        "max": 30
+      },
+      "minAge": 10,
+      "rating": 7.4,
+      "weight": 1.8,
+      "rank": 200,
+      "categories": [
+        "Card Game",
+        "Economic",
+        "Renaissance"
+      ],
+      "mechanics": [
+        "Set Collection",
+        "Engine Building"
+      ],
+      "designers": [
+        "Marc André"
+      ],
+      "collections": [
+        "Snabbt & enkelt"
+      ],
+      "featured": false,
+      "owner": null,
+      "comment": null
+    },
+    {
+      "id": 174430,
+      "name": "Gloomhaven",
+      "year": 2017,
+      "description": "Wandering mercenaries take on dungeons in a living campaign. Tactical card play, persistent characters and branching story choices.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 1,
+        "max": 4
+      },
+      "playTime": {
+        "min": 60,
+        "max": 120
+      },
+      "minAge": 14,
+      "rating": 8.6,
+      "weight": 3.9,
+      "rank": 4,
+      "categories": [
+        "Adventure",
+        "Fantasy",
+        "Fighting"
+      ],
+      "mechanics": [
+        "Cooperative Game",
+        "Campaign / Battle Card Driven",
+        "Hand Management"
+      ],
+      "designers": [
+        "Isaac Childres"
+      ],
+      "collections": [
+        "Tunga kvällar",
+        "Samarbete"
+      ],
+      "featured": false,
+      "owner": "Pontus",
+      "comment": null
+    },
+    {
+      "id": 284083,
+      "name": "The Crew: The Quest for Planet Nine",
+      "year": 2019,
+      "description": "A cooperative trick-taking game played across 50 missions. The team must win specific tricks while barely being allowed to talk.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 2,
+        "max": 5
+      },
+      "playTime": {
+        "min": 20,
+        "max": 20
+      },
+      "minAge": 10,
+      "rating": 7.8,
+      "weight": 2,
+      "rank": 60,
+      "categories": [
+        "Card Game",
+        "Space Exploration"
+      ],
+      "mechanics": [
+        "Cooperative Game",
+        "Trick-taking",
+        "Communication Limits"
+      ],
+      "designers": [
+        "Thomas Sing"
+      ],
+      "collections": [
+        "Samarbete",
+        "Snabbt & enkelt"
+      ],
+      "featured": false,
+      "owner": null,
+      "comment": null
+    },
+    {
+      "id": 163412,
+      "name": "Patchwork",
+      "year": 2014,
+      "description": "Two players compete to build the most beautiful – and highest-scoring – quilt from oddly shaped patches, paid for with buttons and time.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 2,
+        "max": 2
+      },
+      "playTime": {
+        "min": 15,
+        "max": 30
+      },
+      "minAge": 8,
+      "rating": 7.6,
+      "weight": 1.6,
+      "rank": 110,
+      "categories": [
+        "Abstract Strategy",
+        "Puzzle"
+      ],
+      "mechanics": [
+        "Tile Placement",
+        "Time Track"
+      ],
+      "designers": [
+        "Uwe Rosenberg"
+      ],
+      "collections": [
+        "Två spelare",
+        "Snabbt & enkelt"
+      ],
+      "featured": false,
+      "owner": null,
+      "comment": null
+    },
+    {
+      "id": 224517,
+      "name": "Brass: Birmingham",
+      "year": 2018,
+      "description": "Build canals, railways and industries across the West Midlands during the industrial revolution. A tight economic game with a lot of interaction.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 2,
+        "max": 4
+      },
+      "playTime": {
+        "min": 60,
+        "max": 120
+      },
+      "minAge": 14,
+      "rating": 8.6,
+      "weight": 3.9,
+      "rank": 1,
+      "categories": [
+        "Economic",
+        "Industry / Manufacturing",
+        "Transportation"
+      ],
+      "mechanics": [
+        "Hand Management",
+        "Network and Route Building",
+        "Loans"
+      ],
+      "designers": [
+        "Gavan Brown",
+        "Matt Tolman",
+        "Martin Wallace"
+      ],
+      "collections": [
+        "Tunga kvällar"
+      ],
+      "featured": false,
+      "owner": null,
+      "comment": null
+    },
+    {
+      "id": 254640,
+      "name": "Just One",
+      "year": 2018,
+      "description": "Everyone writes a single-word clue to help one player guess a mystery word – but identical clues are cancelled out.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 3,
+        "max": 7
+      },
+      "playTime": {
+        "min": 20,
+        "max": 20
+      },
+      "minAge": 8,
+      "rating": 7.6,
+      "weight": 1.1,
+      "rank": 140,
+      "categories": [
+        "Party Game",
+        "Word Game"
+      ],
+      "mechanics": [
+        "Cooperative Game"
+      ],
+      "designers": [
+        "Ludovic Roudy",
+        "Bruno Sautter"
+      ],
+      "collections": [
+        "Party"
+      ],
+      "featured": false,
+      "owner": null,
+      "comment": null
+    },
+    {
+      "id": 295947,
+      "name": "Cascadia",
+      "year": 2021,
+      "description": "Draft habitat tiles and wildlife tokens to build a corner of the Pacific Northwest, scoring for patterns of animals and large connected habitats.",
+      "image": null,
+      "thumbnail": null,
+      "players": {
+        "min": 1,
+        "max": 4
+      },
+      "playTime": {
+        "min": 30,
+        "max": 45
+      },
+      "minAge": 10,
+      "rating": 7.9,
+      "weight": 1.9,
+      "rank": 45,
+      "categories": [
+        "Animals",
+        "Environmental",
+        "Puzzle"
+      ],
+      "mechanics": [
+        "Tile Placement",
+        "Pattern Building",
+        "Drafting"
+      ],
+      "designers": [
+        "Randy Flynn"
+      ],
+      "collections": [
+        "Familj",
+        "Favoriter"
+      ],
+      "featured": true,
+      "owner": null,
+      "comment": null
+    }
+  ]
+}
