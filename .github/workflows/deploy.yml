@@ -40,8 +40,6 @@ jobs:
         env:
           # Project pages live at https://<user>.github.io/<repo>/
           BASE_PATH: /${{ github.event.repository.name }}/
-          # Apps Script web app for votes (apps-script/Code.gs). Empty → voting hidden.
-          VITE_VOTES_URL: ${{ vars.VOTES_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

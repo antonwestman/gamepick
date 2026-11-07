@@ -34,11 +34,10 @@ Engångs-setup:
 
 1. Öppna arket → **Tillägg → Apps Script**. Ersätt innehållet med [`apps-script/Code.gs`](apps-script/Code.gs) och spara.
 2. **Distribuera → Ny distribution** → typ *Webbapp*. *Kör som:* Jag, *Vem har åtkomst:* Alla. Godkänn behörigheterna.
-3. Kopiera webbappens URL (slutar på `/exec`) och lägg den som repo-variabel `VOTES_URL`
-   (Settings → Secrets and variables → Actions → Variables).
-4. Kör om bygget (Actions → Deploy to GitHub Pages → Run workflow).
+3. Kopiera webbappens URL (slutar på `/exec`) till `VITE_VOTES_URL` i [`.env.production`](.env.production).
+   Den är inte hemlig – webbläsaren anropar den direkt.
 
-Utan `VOTES_URL` döljs röstningen. Det finns ingen inloggning, så vem som helst med länken kan rösta i vems namn som helst –
+Utan `VITE_VOTES_URL` döljs röstningen. Det finns ingen inloggning, så vem som helst med länken kan rösta i vems namn som helst –
 det är tänkt för kompisgänget.
 
 ## Hur det funkar
