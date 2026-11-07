@@ -8,11 +8,13 @@
  *   SHEET_ID       Google Sheet id (default: our Gamepick sheet)
  *   SHEET_GID      Tab id (default: 0, the first tab)
  *   SHEET_CSV_URL  Overrides the two above with any CSV url
- *   BGG_TOKEN      BoardGameGeek XML API token
+ *   BGG_TOKEN      BoardGameGeek XML API token. Without it we use the JSON API
+ *                  behind boardgamegeek.com's own pages (scripts/geekdo.ts).
  */
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import type { GameLibrary } from "../src/lib/game.ts";
 import { fetchGames, searchGameId } from "./bgg.ts";
+import { fetchGeekdoGames, searchGeekdoId } from "./geekdo.ts";
 import { mergeEntries } from "./merge.ts";
 import { parseSheet, type SheetEntry } from "./sheet.ts";
 
@@ -51,7 +53,8 @@ async function main() {
   }
 
   const token = process.env.BGG_TOKEN || undefined;
-  if (!token) console.warn("⚠ BGG_TOKEN is not set – BGG may reject the requests.");
+  if (!token) console.log("No BGG_TOKEN – using the token-free boardgamegeek.com JSON API.");
+  const search = (name: string) => (token ? searchGameId(name, token) : searchGeekdoId(name));
 
   const entries = parseSheet(await fetchSheet());
   console.log(`Sheet: ${entries.length} rows`);
@@ -62,7 +65,7 @@ async function main() {
       resolved.push(entry);
       continue;
     }
-    const id = await searchGameId(entry.name, token);
+    const id = await search(entry.name);
     if (id === null) {
       console.warn(`⚠ No exact BGG match for "${entry.name}" – showing sheet data only. Add its bgg_id to fix.`);
     } else {
@@ -72,7 +75,11 @@ async function main() {
   }
 
   const ids = [...new Set(resolved.flatMap((entry) => (entry.bggId === null ? [] : [entry.bggId])))];
-  const bggGames = await fetchGames(ids, token);
+  const bggGames = token ? await fetchGames(ids, token) : await fetchGeekdoGames(ids);
+  if (ids.length > 0 && bggGames.length === 0) {
+    // Don't replace a working site with one that has no pictures or info.
+    throw new Error("Got no data at all from BoardGameGeek – not publishing.");
+  }
   const missing = ids.filter((id) => !bggGames.some((game) => game.bggId === id));
   if (missing.length > 0) console.warn(`⚠ BGG returned nothing for ids: ${missing.join(", ")}`);
 
@@ -80,6 +87,10 @@ async function main() {
     generatedAt: new Date().toISOString(),
     games: mergeEntries(resolved, bggGames),
   };
+  for (const game of library.games) {
+    const facts = [game.bggId === null ? "only sheet data" : `bgg ${game.bggId}`, game.image ? "image" : "NO IMAGE", `rating ${game.rating ?? "–"}`];
+    console.log(`  ${game.name}: ${facts.join(", ")}`);
+  }
   await writeFile(OUT_FILE, JSON.stringify(library));
   console.log(`Wrote ${library.games.length} games to public/games.json`);
 }
