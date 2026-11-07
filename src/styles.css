@@ -217,3 +217,29 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .name-dialog__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 .button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ---------- vem börjar? ---------- */
+.spinner {
+  position: relative; width: min(420px, 100%); background: var(--surface); border-radius: 14px;
+  padding: 24px; box-shadow: 0 30px 80px rgb(0 0 0 / 0.7); text-align: center;
+}
+.spinner h2 { margin: 0 0 16px; }
+.wheel { position: relative; width: min(300px, 100%); aspect-ratio: 1; margin: 0 auto; }
+.wheel__disc { width: 100%; height: 100%; display: block; }
+.wheel__pointer {
+  position: absolute; z-index: 1; top: -6px; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent;
+  border-top: 24px solid var(--text); filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.6));
+}
+.wheel__label { fill: #fff; font-size: 11px; font-weight: 700; paint-order: stroke; stroke: rgb(0 0 0 / 0.35); stroke-width: 2px; }
+.spinner__result { min-height: 1.6em; margin: 16px 0 8px; font-size: 1.3rem; }
+.spinner__spin { width: 100%; justify-content: center; }
+.spinner__names { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 16px 0 12px; }
+.spinner__names .tag { display: inline-flex; align-items: center; gap: 4px; padding-right: 4px; }
+.spinner__remove { border: 0; background: transparent; color: var(--muted); font-size: 1rem; line-height: 1; padding: 0 4px; }
+.spinner__add { display: flex; gap: 8px; }
+.spinner__add input {
+  flex: 1; min-width: 0; height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid #3f3f46;
+  background: var(--bg); color: var(--text); font: inherit;
+}
+.spinner .modal__close { top: 12px; right: 12px; }

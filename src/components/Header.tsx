@@ -5,11 +5,12 @@ type Props = {
   onQueryChange: (query: string) => void;
   playerCount: number | null;
   onPlayerCountChange: (count: number | null) => void;
+  onOpenSpinner: () => void;
 };
 
 const PLAYER_COUNTS = [1, 2, 3, 4, 5, 6];
 
-export function Header({ query, onQueryChange, playerCount, onPlayerCountChange }: Props) {
+export function Header({ query, onQueryChange, playerCount, onPlayerCountChange, onOpenSpinner }: Props) {
   const votes = useVotes();
   return (
     <header className="header">
@@ -30,6 +31,9 @@ export function Header({ query, onQueryChange, playerCount, onPlayerCountChange 
             </button>
           ))}
         </div>
+        <button type="button" className="voter" onClick={onOpenSpinner}>
+          🎯 Vem börjar?
+        </button>
         {votes && (
           <button type="button" className="voter" onClick={votes.changeVoter}>
             {votes.voter ? `Röstar som ${votes.voter}` : "Vem är du?"}
