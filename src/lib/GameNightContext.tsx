@@ -1,6 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { NameDialog } from "../components/NameDialog.tsx";
 import { applyChange, emptyState, fetchState, sendChange, type Change, type GameNightState, type Spin } from "./gameNight.ts";
+import { newSpinId, SHARED_LEAD_MS } from "./spinner.ts";
 import { tallyVotes, type Tally } from "./votes.ts";
 
 export type GameNightApi = {
@@ -28,7 +29,8 @@ const GameNightContext = createContext<GameNightApi | null>(null);
 export const useGameNight = () => useContext(GameNightContext);
 
 const POLL_MS = 15_000;
-const CLOSE_POLL_MS = 3_000;
+/** While the spinner is open: fast enough that a shared spin's countdown is seen in time. */
+const CLOSE_POLL_MS = 1_000;
 const VOTER_KEY = "gamepick.voter";
 
 function readStoredVoter(): string | null {
@@ -61,13 +63,19 @@ function ConnectedGameNight({ url, children }: { url: string; children: ReactNod
   const [namePrompt, setNamePrompt] = useState<NamePrompt>({ open: false });
   const [closeWatchers, setCloseWatchers] = useState(0);
 
+  const inFlight = useRef(false);
   const refresh = useCallback(() => {
+    if (inFlight.current) return; // Apps Script can be slower than our poll interval
+    inFlight.current = true;
     fetchState(url)
       .then((fresh) => {
         setState(fresh);
         setError(null);
       })
-      .catch(() => setError("Kunde inte hämta rösterna."));
+      .catch(() => setError("Kunde inte hämta rösterna."))
+      .finally(() => {
+        inFlight.current = false;
+      });
   }, [url]);
 
   // Keep everyone's screen in sync: poll, and refresh when the app comes back.
@@ -122,7 +130,8 @@ function ConnectedGameNight({ url, children }: { url: string; children: ReactNod
       addPlayer: (name) => send({ action: "addPlayer", name }),
       removePlayer: (name) => send({ action: "removePlayer", name }),
       spin: state.spin,
-      recordSpin: (winner) => send({ action: "spin", id: crypto.randomUUID(), winner, by: voter ?? "" }),
+      recordSpin: (winner) =>
+        send({ action: "spin", id: newSpinId(Date.now() + SHARED_LEAD_MS), winner, by: voter ?? "" }),
       watchClosely,
     };
   }, [tally, voter, error, state.players, state.spin, send, watchClosely]);

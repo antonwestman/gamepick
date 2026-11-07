@@ -11,6 +11,7 @@ import { Header } from "./components/Header.tsx";
 import { Hero } from "./components/Hero.tsx";
 import { Rail } from "./components/Rail.tsx";
 import { StarterSpinner } from "./components/StarterSpinner.tsx";
+import { unlockAudio } from "./lib/spinSound.ts";
 
 export function App() {
   const state = useLibrary();
@@ -52,7 +53,10 @@ export function Browse({ games }: { games: Game[] }) {
         onQueryChange={setQuery}
         playerCount={playerCount}
         onPlayerCountChange={setPlayerCount}
-        onOpenSpinner={() => setSpinnerOpen(true)}
+        onOpenSpinner={() => {
+          unlockAudio(); // so spins started on other phones can be heard here
+          setSpinnerOpen(true);
+        }}
       />
       <main>
         {votes?.error && (

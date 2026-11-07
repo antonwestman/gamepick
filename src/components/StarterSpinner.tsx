@@ -1,11 +1,25 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { Spin } from "../lib/gameNight.ts";
 import { useGameNight } from "../lib/GameNightContext.tsx";
-import { cleanNames, segmentSize, spinTarget } from "../lib/spinner.ts";
+import { playSpinSound, unlockAudio } from "../lib/spinSound.ts";
+import { cleanNames, newSpinId, scheduleSpin, segmentSize, SPIN_MS, spinStartAt, spinTarget } from "../lib/spinner.ts";
 
-const SPIN_MS = 4500;
 const PLAYERS_KEY = "gamepick.players";
+const SOUND_KEY = "gamepick.sound";
+
+function readSoundOn(): boolean {
+  try {
+    return window.localStorage.getItem(SOUND_KEY) !== "off";
+  } catch {
+    return true;
+  }
+}
 const COLORS = ["#e5484d", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316"];
+
+type Motion =
+  | { kind: "still" }
+  | { kind: "countdown"; startsAt: number }
+  | { kind: "spinning"; durationMs: number };
 
 type Players = {
   names: string[];
@@ -50,7 +64,7 @@ function useLocalPlayers(initial: () => string[]): Players {
     add: (name) => update([...names, name]),
     remove: (name) => update(names.filter((n) => n !== name)),
     lastSpin,
-    recordSpin: (winner) => setLastSpin({ id: crypto.randomUUID(), winner, by: "" }),
+    recordSpin: (winner) => setLastSpin({ id: newSpinId(Date.now()), winner, by: "" }),
     shared: false,
   };
 }
@@ -81,10 +95,14 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
 
   const [draft, setDraft] = useState("");
   const [rotation, setRotation] = useState(0);
-  const [spinning, setSpinning] = useState(false);
+  const [motion, setMotion] = useState<Motion>({ kind: "still" });
+  const [soundOn, setSoundOn] = useState(readSoundOn);
   const inputRef = useRef<HTMLInputElement>(null);
-  // A spin that already happened before the dialog opened is shown, not replayed.
-  const seenSpinId = useRef(lastSpin?.id ?? null);
+  // The spin effect below only re-runs for a new spin id; it reads the latest list from here.
+  const latest = useRef({ names, lastSpin, soundOn });
+  useEffect(() => {
+    latest.current = { names, lastSpin, soundOn };
+  });
 
   // Close on Escape, lock page scroll.
   useEffect(() => {
@@ -101,21 +119,51 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
   const watchClosely = night?.watchClosely;
   useEffect(() => watchClosely?.(), [watchClosely]);
 
-  // A new spin – from this phone or another – animates the wheel onto the winner.
+  // A spin – from this phone or another – counts down to its shared start time, then
+  // animates onto the winner so that every phone stops at the same moment.
+  // A spin that ended before the dialog opened is just shown.
+  const spinId = lastSpin?.id ?? null;
   useEffect(() => {
-    if (!lastSpin || lastSpin.id === seenSpinId.current) return;
-    seenSpinId.current = lastSpin.id;
+    const { names, lastSpin } = latest.current;
+    if (spinId === null || !lastSpin) return;
     const index = names.findIndex((name) => name.toLowerCase() === lastSpin.winner.toLowerCase());
-    if (index === -1 || prefersReducedMotion()) return;
-    setRotation((current) => spinTarget(current, names.length, index, offsetFor(lastSpin.id)));
-    setSpinning(true);
-  }, [lastSpin, names]);
+    const startAt = spinStartAt(spinId) ?? Date.now();
+    const plan = scheduleSpin(startAt, Date.now());
+    if (index === -1 || prefersReducedMotion() || plan.kind === "over") {
+      setMotion({ kind: "still" });
+      return;
+    }
 
-  useEffect(() => {
-    if (!spinning) return;
-    const timer = window.setTimeout(() => setSpinning(false), SPIN_MS);
-    return () => window.clearTimeout(timer);
-  }, [spinning]);
+    const timers: number[] = [];
+    let stopSound = () => {};
+    const begin = (durationMs: number) => {
+      setRotation((current) => spinTarget(current, names.length, index, offsetFor(spinId)));
+      setMotion({ kind: "spinning", durationMs });
+      if (latest.current.soundOn) stopSound = playSpinSound(durationMs); // frrrrrrr
+      timers.push(window.setTimeout(() => setMotion({ kind: "still" }), durationMs));
+    };
+    if (plan.kind === "wait") {
+      setMotion({ kind: "countdown", startsAt: Date.now() + plan.waitMs });
+      timers.push(window.setTimeout(() => begin(SPIN_MS), plan.waitMs));
+    } else {
+      begin(plan.durationMs);
+    }
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+      stopSound();
+    };
+  }, [spinId]);
+
+  const toggleSound = () => {
+    const next = !soundOn;
+    setSoundOn(next);
+    if (next) unlockAudio();
+    try {
+      window.localStorage.setItem(SOUND_KEY, next ? "on" : "off");
+    } catch {
+      // Not remembered – fine.
+    }
+  };
 
   const addName = (event: FormEvent) => {
     event.preventDefault();
@@ -125,10 +173,12 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
   };
 
   const spin = () => {
+    unlockAudio(); // a tap is what lets the browser play sound
     const winner = names[Math.floor(Math.random() * names.length)];
     if (winner !== undefined) players.recordSpin(winner);
   };
 
+  const busy = motion.kind !== "still";
   const winnerIsPlaying = lastSpin !== null && names.some((n) => n.toLowerCase() === lastSpin.winner.toLowerCase());
 
   return (
@@ -137,15 +187,26 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
         <button className="modal__close" onClick={onClose} aria-label="Stäng">
           ✕
         </button>
+        <button
+          type="button"
+          className="spinner__sound"
+          onClick={toggleSound}
+          aria-pressed={soundOn}
+          aria-label={soundOn ? "Stäng av ljud" : "Slå på ljud"}
+        >
+          {soundOn ? "🔊" : "🔇"}
+        </button>
         <h2 id="spinner-title">Vem börjar?</h2>
 
         <div className="wheel">
           <div className="wheel__pointer" aria-hidden="true" />
-          <Wheel names={names} rotation={rotation} animate={spinning} />
+          <Wheel names={names} rotation={rotation} spinMs={motion.kind === "spinning" ? motion.durationMs : null} />
         </div>
 
         <p className="spinner__result" aria-live="polite">
-          {spinning ? (
+          {motion.kind === "countdown" ? (
+            <Countdown until={motion.startsAt} />
+          ) : motion.kind === "spinning" ? (
             "Snurrar…"
           ) : lastSpin && winnerIsPlaying ? (
             <>
@@ -159,7 +220,7 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
           )}
         </p>
 
-        <button className="button button--primary spinner__spin" onClick={spin} disabled={spinning || names.length < 2}>
+        <button className="button button--primary spinner__spin" onClick={spin} disabled={busy || names.length < 2}>
           {lastSpin && winnerIsPlaying ? "Snurra igen" : "Snurra"}
         </button>
 
@@ -171,7 +232,7 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
                 type="button"
                 className="spinner__remove"
                 aria-label={`Ta bort ${name}`}
-                disabled={spinning}
+                disabled={busy}
                 onClick={() => players.remove(name)}
               >
                 ×
@@ -188,9 +249,9 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
             value={draft}
             maxLength={20}
             onChange={(event) => setDraft(event.target.value)}
-            disabled={spinning}
+            disabled={busy}
           />
-          <button type="submit" className="button" disabled={spinning || draft.trim() === ""}>
+          <button type="submit" className="button" disabled={busy || draft.trim() === ""}>
             Lägg till
           </button>
         </form>
@@ -202,7 +263,7 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
   );
 }
 
-function Wheel({ names, rotation, animate }: { names: string[]; rotation: number; animate: boolean }) {
+function Wheel({ names, rotation, spinMs }: { names: string[]; rotation: number; spinMs: number | null }) {
   const size = segmentSize(Math.max(names.length, 1));
   const point = (angle: number, radius: number) => {
     const rad = (angle * Math.PI) / 180;
@@ -215,7 +276,7 @@ function Wheel({ names, rotation, animate }: { names: string[]; rotation: number
       viewBox="-100 -100 200 200"
       style={{
         transform: `rotate(${rotation}deg)`,
-        transition: animate ? `transform ${SPIN_MS}ms cubic-bezier(0.15, 0.85, 0.2, 1)` : "none",
+        transition: spinMs !== null ? `transform ${spinMs}ms cubic-bezier(0.15, 0.85, 0.2, 1)` : "none",
       }}
       aria-hidden="true"
     >
@@ -245,4 +306,15 @@ function Wheel({ names, rotation, animate }: { names: string[]; rotation: number
       <circle r="12" fill="#0d0d10" stroke="#f4f4f5" strokeWidth="3" />
     </svg>
   );
+}
+
+/** "Snurrar om 3…" – ticks down to the shared start. */
+function Countdown({ until }: { until: number }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 200);
+    return () => window.clearInterval(timer);
+  }, []);
+  const seconds = Math.max(1, Math.ceil((until - now) / 1000));
+  return <>Snurrar om {seconds}…</>;
 }
