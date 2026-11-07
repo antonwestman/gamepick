@@ -1,9 +1,19 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { Spin } from "../lib/gameNight.ts";
 import { useGameNight } from "../lib/GameNightContext.tsx";
+import { playSpinSound, unlockAudio } from "../lib/spinSound.ts";
 import { cleanNames, newSpinId, scheduleSpin, segmentSize, SPIN_MS, spinStartAt, spinTarget } from "../lib/spinner.ts";
 
 const PLAYERS_KEY = "gamepick.players";
+const SOUND_KEY = "gamepick.sound";
+
+function readSoundOn(): boolean {
+  try {
+    return window.localStorage.getItem(SOUND_KEY) !== "off";
+  } catch {
+    return true;
+  }
+}
 const COLORS = ["#e5484d", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316"];
 
 type Motion =
@@ -86,11 +96,12 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
   const [draft, setDraft] = useState("");
   const [rotation, setRotation] = useState(0);
   const [motion, setMotion] = useState<Motion>({ kind: "still" });
+  const [soundOn, setSoundOn] = useState(readSoundOn);
   const inputRef = useRef<HTMLInputElement>(null);
   // The spin effect below only re-runs for a new spin id; it reads the latest list from here.
-  const latest = useRef({ names, lastSpin });
+  const latest = useRef({ names, lastSpin, soundOn });
   useEffect(() => {
-    latest.current = { names, lastSpin };
+    latest.current = { names, lastSpin, soundOn };
   });
 
   // Close on Escape, lock page scroll.
@@ -124,9 +135,11 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
     }
 
     const timers: number[] = [];
+    let stopSound = () => {};
     const begin = (durationMs: number) => {
       setRotation((current) => spinTarget(current, names.length, index, offsetFor(spinId)));
       setMotion({ kind: "spinning", durationMs });
+      if (latest.current.soundOn) stopSound = playSpinSound(durationMs); // frrrrrrr
       timers.push(window.setTimeout(() => setMotion({ kind: "still" }), durationMs));
     };
     if (plan.kind === "wait") {
@@ -135,8 +148,22 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
     } else {
       begin(plan.durationMs);
     }
-    return () => timers.forEach((timer) => window.clearTimeout(timer));
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+      stopSound();
+    };
   }, [spinId]);
+
+  const toggleSound = () => {
+    const next = !soundOn;
+    setSoundOn(next);
+    if (next) unlockAudio();
+    try {
+      window.localStorage.setItem(SOUND_KEY, next ? "on" : "off");
+    } catch {
+      // Not remembered – fine.
+    }
+  };
 
   const addName = (event: FormEvent) => {
     event.preventDefault();
@@ -146,6 +173,7 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
   };
 
   const spin = () => {
+    unlockAudio(); // a tap is what lets the browser play sound
     const winner = names[Math.floor(Math.random() * names.length)];
     if (winner !== undefined) players.recordSpin(winner);
   };
@@ -158,6 +186,15 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
       <div className="spinner" role="dialog" aria-modal="true" aria-labelledby="spinner-title">
         <button className="modal__close" onClick={onClose} aria-label="Stäng">
           ✕
+        </button>
+        <button
+          type="button"
+          className="spinner__sound"
+          onClick={toggleSound}
+          aria-pressed={soundOn}
+          aria-label={soundOn ? "Stäng av ljud" : "Slå på ljud"}
+        >
+          {soundOn ? "🔊" : "🔇"}
         </button>
         <h2 id="spinner-title">Vem börjar?</h2>
 

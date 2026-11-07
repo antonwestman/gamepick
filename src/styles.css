@@ -253,3 +253,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .spinner__by { display: block; margin-top: 2px; color: var(--muted); font-size: 0.85rem; }
 .spinner__note { margin: 12px 0 0; color: var(--muted); font-size: 0.8rem; }
+.spinner__sound {
+  position: absolute; top: 12px; left: 12px; width: 40px; height: 40px; border-radius: 50%;
+  border: 0; background: rgb(0 0 0 / 0.6); font-size: 1.1rem;
+}
