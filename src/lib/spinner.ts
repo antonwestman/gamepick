@@ -36,3 +36,36 @@ export function cleanNames(names: string[]): string[] {
       return true;
     });
 }
+
+/** How long the wheel spins. Every phone stops at startAt + SPIN_MS. */
+export const SPIN_MS = 4500;
+/** Head start before a shared spin begins, so other phones have time to fetch it. */
+export const SHARED_LEAD_MS = 3000;
+
+/**
+ * A spin's id carries its start time ("<epoch ms>~<uuid>"), so all phones can start
+ * and stop together without changing what the Apps Script stores.
+ */
+export function newSpinId(startAt: number): string {
+  return `${Math.round(startAt)}~${crypto.randomUUID()}`;
+}
+
+export function spinStartAt(spinId: string): number | null {
+  const match = spinId.match(/^(\d{13})~/);
+  return match?.[1] ? Number(match[1]) : null;
+}
+
+export type SpinSchedule =
+  | { kind: "wait"; waitMs: number } // count down, then spin for SPIN_MS
+  | { kind: "spin"; durationMs: number } // already started: spin faster to stop on time
+  | { kind: "over" }; // just show the result
+
+/** What a phone should do about a spin that starts at `startAt`, seen at `now`. */
+export function scheduleSpin(startAt: number, now: number): SpinSchedule {
+  // A phone whose clock is far off shouldn't make everyone wait.
+  const start = Math.min(startAt, now + SHARED_LEAD_MS);
+  if (start > now) return { kind: "wait", waitMs: start - now };
+  const remaining = start + SPIN_MS - now;
+  // Under ~0.8 s the wheel would just jerk – show the result instead.
+  return remaining > 800 ? { kind: "spin", durationMs: remaining } : { kind: "over" };
+}
