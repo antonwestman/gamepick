@@ -11,7 +11,8 @@ export function useLibrary(url = `${import.meta.env.BASE_URL}games.json`): Libra
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch(url, { signal: controller.signal })
+    // "no-cache" revalidates, so a reload never shows yesterday's list (Pages caches files for 10 min).
+    fetch(url, { signal: controller.signal, cache: "no-cache" })
       .then((response) => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         return response.json() as Promise<GameLibrary>;
