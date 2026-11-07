@@ -1,10 +1,10 @@
 import type { Game } from "../lib/game.ts";
-import { useVotes } from "../lib/VotesContext.tsx";
+import { useGameNight } from "../lib/GameNightContext.tsx";
 
 type Props = { game: Game; variant?: "compact" | "large" };
 
 export function VoteButton({ game, variant = "compact" }: Props) {
-  const votes = useVotes();
+  const votes = useGameNight();
   if (!votes) return null;
 
   const count = votes.tally.get(game.id)?.length ?? 0;

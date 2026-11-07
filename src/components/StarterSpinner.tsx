@@ -1,12 +1,20 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import type { Spin } from "../lib/gameNight.ts";
+import { useGameNight } from "../lib/GameNightContext.tsx";
 import { cleanNames, segmentSize, spinTarget } from "../lib/spinner.ts";
-import { useVotes } from "../lib/VotesContext.tsx";
 
 const SPIN_MS = 4500;
 const PLAYERS_KEY = "gamepick.players";
 const COLORS = ["#e5484d", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316"];
 
-type Phase = { kind: "idle" } | { kind: "spinning"; winner: string } | { kind: "done"; winner: string };
+type Players = {
+  names: string[];
+  add: (name: string) => void;
+  remove: (name: string) => void;
+  lastSpin: Spin | null;
+  recordSpin: (winner: string) => void;
+  shared: boolean;
+};
 
 function readStoredPlayers(): string[] {
   try {
@@ -25,20 +33,58 @@ function storePlayers(names: string[]) {
   }
 }
 
+/** Fallback when there's no shared backend (or an old Apps Script): a list kept on this phone. */
+function useLocalPlayers(initial: () => string[]): Players {
+  const [names, setNames] = useState<string[]>(() => {
+    const stored = readStoredPlayers();
+    return stored.length > 0 ? stored : initial();
+  });
+  const [lastSpin, setLastSpin] = useState<Spin | null>(null);
+  const update = (next: string[]) => {
+    const cleaned = cleanNames(next);
+    setNames(cleaned);
+    storePlayers(cleaned);
+  };
+  return {
+    names,
+    add: (name) => update([...names, name]),
+    remove: (name) => update(names.filter((n) => n !== name)),
+    lastSpin,
+    recordSpin: (winner) => setLastSpin({ id: crypto.randomUUID(), winner, by: "" }),
+    shared: false,
+  };
+}
+
+/** The same spin should land on the same spot on every phone. */
+function offsetFor(spinId: string): number {
+  const hash = [...spinId].reduce((sum, char) => (sum * 31 + char.charCodeAt(0)) % 1000, 7);
+  return hash / 1000 - 0.5;
+}
+
 const prefersReducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
 
 export function StarterSpinner({ onClose }: { onClose: () => void }) {
-  const votes = useVotes();
-  const [names, setNames] = useState<string[]>(() => {
-    const stored = readStoredPlayers();
-    if (stored.length > 0) return stored;
-    // First time: start with whoever has voted tonight.
-    return cleanNames([...(votes?.tally.values() ?? [])].flat());
-  });
+  const night = useGameNight();
+  const local = useLocalPlayers(() => cleanNames([...(night?.tally.values() ?? [])].flat()));
+  const players: Players =
+    night && night.players !== null
+      ? {
+          names: night.players,
+          add: night.addPlayer,
+          remove: night.removePlayer,
+          lastSpin: night.spin,
+          recordSpin: night.recordSpin,
+          shared: true,
+        }
+      : local;
+  const { names, lastSpin } = players;
+
   const [draft, setDraft] = useState("");
   const [rotation, setRotation] = useState(0);
-  const [phase, setPhase] = useState<Phase>({ kind: "idle" });
+  const [spinning, setSpinning] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  // A spin that already happened before the dialog opened is shown, not replayed.
+  const seenSpinId = useRef(lastSpin?.id ?? null);
 
   // Close on Escape, lock page scroll.
   useEffect(() => {
@@ -51,36 +97,39 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
     };
   }, [onClose]);
 
-  // The wheel animates with a CSS transition; reveal the winner when it stops.
-  useEffect(() => {
-    if (phase.kind !== "spinning") return;
-    const timer = window.setTimeout(() => setPhase({ kind: "done", winner: phase.winner }), SPIN_MS);
-    return () => window.clearTimeout(timer);
-  }, [phase]);
+  // Poll every few seconds while open, so a spin on someone else's phone shows up here quickly.
+  const watchClosely = night?.watchClosely;
+  useEffect(() => watchClosely?.(), [watchClosely]);
 
-  const updateNames = (next: string[]) => {
-    const cleaned = cleanNames(next);
-    setNames(cleaned);
-    storePlayers(cleaned);
-    setPhase({ kind: "idle" });
-  };
+  // A new spin – from this phone or another – animates the wheel onto the winner.
+  useEffect(() => {
+    if (!lastSpin || lastSpin.id === seenSpinId.current) return;
+    seenSpinId.current = lastSpin.id;
+    const index = names.findIndex((name) => name.toLowerCase() === lastSpin.winner.toLowerCase());
+    if (index === -1 || prefersReducedMotion()) return;
+    setRotation((current) => spinTarget(current, names.length, index, offsetFor(lastSpin.id)));
+    setSpinning(true);
+  }, [lastSpin, names]);
+
+  useEffect(() => {
+    if (!spinning) return;
+    const timer = window.setTimeout(() => setSpinning(false), SPIN_MS);
+    return () => window.clearTimeout(timer);
+  }, [spinning]);
 
   const addName = (event: FormEvent) => {
     event.preventDefault();
-    updateNames([...names, draft]);
+    if (draft.trim() !== "") players.add(draft.trim());
     setDraft("");
     inputRef.current?.focus();
   };
 
   const spin = () => {
-    const index = Math.floor(Math.random() * names.length);
-    const winner = names[index];
-    if (winner === undefined) return;
-    setRotation((current) => spinTarget(current, names.length, index, Math.random() - 0.5));
-    setPhase(prefersReducedMotion() ? { kind: "done", winner } : { kind: "spinning", winner });
+    const winner = names[Math.floor(Math.random() * names.length)];
+    if (winner !== undefined) players.recordSpin(winner);
   };
 
-  const spinning = phase.kind === "spinning";
+  const winnerIsPlaying = lastSpin !== null && names.some((n) => n.toLowerCase() === lastSpin.winner.toLowerCase());
 
   return (
     <div className="modal modal--small" onClick={(event) => event.target === event.currentTarget && onClose()}>
@@ -96,21 +145,22 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
         </div>
 
         <p className="spinner__result" aria-live="polite">
-          {phase.kind === "done" ? (
-            <>
-              <strong>{phase.winner}</strong> börjar! 🎉
-            </>
-          ) : spinning ? (
+          {spinning ? (
             "Snurrar…"
+          ) : lastSpin && winnerIsPlaying ? (
+            <>
+              <strong>{lastSpin.winner}</strong> börjar! 🎉
+              {lastSpin.by && <span className="spinner__by"> Snurrat av {lastSpin.by}</span>}
+            </>
           ) : names.length < 2 ? (
             "Lägg till minst två spelare."
           ) : (
-            " "
+            "\u00a0"
           )}
         </p>
 
         <button className="button button--primary spinner__spin" onClick={spin} disabled={spinning || names.length < 2}>
-          {phase.kind === "done" ? "Snurra igen" : "Snurra"}
+          {lastSpin && winnerIsPlaying ? "Snurra igen" : "Snurra"}
         </button>
 
         <ul className="spinner__names" aria-label="Spelare">
@@ -122,7 +172,7 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
                 className="spinner__remove"
                 aria-label={`Ta bort ${name}`}
                 disabled={spinning}
-                onClick={() => updateNames(names.filter((n) => n !== name))}
+                onClick={() => players.remove(name)}
               >
                 ×
               </button>
@@ -144,6 +194,9 @@ export function StarterSpinner({ onClose }: { onClose: () => void }) {
             Lägg till
           </button>
         </form>
+        <p className="spinner__note">
+          {players.shared ? "Listan och snurren delas med alla." : "Listan sparas bara på den här telefonen."}
+        </p>
       </div>
     </div>
   );

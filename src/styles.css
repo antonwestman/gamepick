@@ -251,3 +251,5 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding: 12px 20px; border: 0; border-radius: 999px; background: var(--text); color: var(--bg);
   font-weight: 700; box-shadow: 0 10px 30px rgb(0 0 0 / 0.5);
 }
+.spinner__by { display: block; margin-top: 2px; color: var(--muted); font-size: 0.85rem; }
+.spinner__note { margin: 12px 0 0; color: var(--muted); font-size: 0.8rem; }

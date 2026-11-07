@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import type { Game } from "./lib/game.ts";
 import { buildRails, heroGames, searchGames, similarGames, supportsPlayerCount, type Rail as RailData } from "./lib/rails.ts";
 import { rankByVotes } from "./lib/votes.ts";
-import { useVotes } from "./lib/VotesContext.tsx";
+import { useGameNight } from "./lib/GameNightContext.tsx";
 import { useSelectedGameId } from "./lib/route.ts";
 import { useLibrary } from "./lib/useLibrary.ts";
 import { GameCard } from "./components/GameCard.tsx";
@@ -25,7 +25,7 @@ export function Browse({ games }: { games: Game[] }) {
   const [playerCount, setPlayerCount] = useState<number | null>(null);
   const [spinnerOpen, setSpinnerOpen] = useState(false);
   const selectedId = useSelectedGameId();
-  const votes = useVotes();
+  const votes = useGameNight();
 
   const visible = useMemo(
     () => (playerCount === null ? games : games.filter((g) => supportsPlayerCount(g, playerCount))),
