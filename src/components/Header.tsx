@@ -1,4 +1,4 @@
-import { useVotes } from "../lib/VotesContext.tsx";
+import { useGameNight } from "../lib/GameNightContext.tsx";
 
 type Props = {
   query: string;
@@ -11,7 +11,7 @@ type Props = {
 const PLAYER_COUNTS = [1, 2, 3, 4, 5, 6];
 
 export function Header({ query, onQueryChange, playerCount, onPlayerCountChange, onOpenSpinner }: Props) {
-  const votes = useVotes();
+  const votes = useGameNight();
   return (
     <header className="header">
       <a className="logo" href="#/">

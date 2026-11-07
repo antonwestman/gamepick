@@ -5,12 +5,12 @@ import { closeGame } from "../lib/route.ts";
 import { Cover } from "./Cover.tsx";
 import { Rail } from "./Rail.tsx";
 import { VoteButton } from "./VoteButton.tsx";
-import { useVotes } from "../lib/VotesContext.tsx";
+import { useGameNight } from "../lib/GameNightContext.tsx";
 
 type Props = { game: Game; similar: Game[] };
 
 export function GameModal({ game, similar }: Props) {
-  const votes = useVotes();
+  const votes = useGameNight();
   const voters = votes?.tally.get(game.id) ?? [];
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);

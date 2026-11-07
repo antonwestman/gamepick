@@ -1,4 +1,4 @@
-/** Votes live in the "Röster" tab of our sheet, behind a Google Apps Script (apps-script/Code.gs). */
+/** Pure helpers for votes. Fetching/sending lives in gameNight.ts. */
 
 export type Vote = { gameId: string; voter: string };
 
@@ -27,24 +27,4 @@ export function applyVote(votes: Vote[], change: Vote & { vote: boolean }): Vote
   const same = (v: Vote) => v.gameId === change.gameId && v.voter.toLowerCase() === change.voter.toLowerCase();
   const without = votes.filter((v) => !same(v));
   return change.vote ? [...without, { gameId: change.gameId, voter: change.voter }] : without;
-}
-
-type VotesResponse = { votes?: Vote[]; error?: string };
-
-async function parse(response: Response): Promise<Vote[]> {
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const body = (await response.json()) as VotesResponse;
-  if (body.error || !body.votes) throw new Error(body.error ?? "Oväntat svar");
-  return body.votes;
-}
-
-export async function fetchVotes(url: string): Promise<Vote[]> {
-  return parse(await fetch(url));
-}
-
-export async function sendVote(url: string, change: Vote & { vote: boolean }): Promise<Vote[]> {
-  // text/plain keeps this a "simple" request, so the browser skips the CORS preflight Apps Script can't answer.
-  return parse(
-    await fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(change) }),
-  );
 }

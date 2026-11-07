@@ -27,15 +27,23 @@ Snabba spel, 6+ spelare, Bara för två, Lätta att lära, Tunga strategispel oc
 
 Tryck 👍 på ett spel för att rösta. Första gången får du skriva ditt namn (det sparas i webbläsaren).
 Spelen med flest röster hamnar i raden **Kvällens topplista** högst upp, och alla ser varandras röster
-(sidan uppdateras var 15:e sekund). Inför nästa spelkväll: ta bort raderna i fliken **Röster** i arket.
+(sidan uppdateras var 15:e sekund).
 
-Rösterna sparas i arket via ett litet Google Apps Script, eftersom GitHub Pages bara kan visa statiska filer.
+**🎯 Vem börjar?** snurrar fram vem som börjar. Spelarlistan och resultatet delas med alla: när någon snurrar
+snurrar hjulet hos alla och landar på samma person.
+
+Inför nästa spelkväll: ta bort raderna i flikarna **Röster**, **Spelare** och **Snurr** i arket.
+
+Röster, spelare och snurr sparas i arket via ett litet Google Apps Script, eftersom GitHub Pages bara kan visa statiska filer.
 Engångs-setup:
 
 1. Öppna arket → **Tillägg → Apps Script**. Ersätt innehållet med [`apps-script/Code.gs`](apps-script/Code.gs) och spara.
 2. **Distribuera → Ny distribution** → typ *Webbapp*. *Kör som:* Jag, *Vem har åtkomst:* Alla. Godkänn behörigheterna.
 3. Kopiera webbappens URL (slutar på `/exec`) till `VITE_VOTES_URL` i [`.env.production`](.env.production).
    Den är inte hemlig – webbläsaren anropar den direkt.
+
+När `Code.gs` ändras: **Distribuera → Hantera distributioner → ✏️ → Version: Ny version → Distribuera**
+(URL:en är densamma). Med ett äldre skript fungerar röstningen, men snurrans lista sparas bara per telefon.
 
 Utan `VITE_VOTES_URL` döljs röstningen. Det finns ingen inloggning, så vem som helst med länken kan rösta i vems namn som helst –
 det är tänkt för kompisgänget.
