@@ -43,7 +43,7 @@ describe("parseThings", () => {
   it("maps a BGG thing to our game shape", () => {
     const [catan] = parseThings(thingXml);
     expect(catan).toEqual({
-      id: 13,
+      bggId: 13,
       name: "CATAN",
       year: 1995,
       description: "Trade & build.\n\nRoads — cities.",

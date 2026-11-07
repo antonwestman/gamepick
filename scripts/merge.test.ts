@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { BggGame } from "./bgg.ts";
-import { mergeEntries, type ResolvedEntry } from "./merge.ts";
+import { mergeEntries, slugify } from "./merge.ts";
+import type { SheetEntry } from "./sheet.ts";
 
-const entry = (overrides: Partial<ResolvedEntry> & { bggId: number }): ResolvedEntry => ({
+const entry = (overrides: Partial<SheetEntry>): SheetEntry => ({
+  bggId: null,
   name: null,
   collections: [],
   featured: false,
@@ -11,8 +13,8 @@ const entry = (overrides: Partial<ResolvedEntry> & { bggId: number }): ResolvedE
   ...overrides,
 });
 
-const bgg = (id: number, name: string): BggGame => ({
-  id,
+const bgg = (bggId: number, name: string): BggGame => ({
+  bggId,
   name,
   year: 2000,
   description: "",
@@ -32,7 +34,7 @@ const bgg = (id: number, name: string): BggGame => ({
 describe("mergeEntries", () => {
   it("combines sheet rows with BGG data, preferring the sheet's name", () => {
     const [game] = mergeEntries([entry({ bggId: 13, name: "Settlers", featured: true })], [bgg(13, "CATAN")]);
-    expect(game).toMatchObject({ id: 13, name: "Settlers", year: 2000, featured: true });
+    expect(game).toMatchObject({ id: "13", bggId: 13, name: "Settlers", year: 2000, featured: true });
   });
 
   it("merges duplicate rows for the same game", () => {
@@ -44,9 +46,19 @@ describe("mergeEntries", () => {
     expect(games[0]).toMatchObject({ collections: ["A", "B"], owner: "Pontus" });
   });
 
-  it("keeps a game BGG didn't return if the sheet names it, drops it otherwise", () => {
-    const games = mergeEntries([entry({ bggId: 1, name: "Hemmagjort" }), entry({ bggId: 2 })], []);
-    expect(games.map((g) => g.name)).toEqual(["Hemmagjort"]);
-    expect(games[0]?.players).toBeNull();
+  it("keeps games that aren't on BGG, using a slug of the name as id", () => {
+    const [game] = mergeEntries([entry({ name: "Hitster – Guilty Pleasures", collections: ["Party"] })], []);
+    expect(game).toMatchObject({ id: "hitster-guilty-pleasures", bggId: null, collections: ["Party"], players: null });
+  });
+
+  it("drops rows with neither a name nor BGG data", () => {
+    expect(mergeEntries([entry({ bggId: 2 })], [])).toEqual([]);
+  });
+});
+
+describe("slugify", () => {
+  it("makes readable, url-safe ids", () => {
+    expect(slugify("Brass: Birmingham")).toBe("brass-birmingham");
+    expect(slugify("Släkt & vänner – Fördel")).toBe("slakt-vanner-fordel");
   });
 });

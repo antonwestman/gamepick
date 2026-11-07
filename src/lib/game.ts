@@ -6,8 +6,13 @@
 export type Range = { min: number; max: number };
 
 export type Game = {
-  /** BoardGameGeek id, also used in the URL (#/spel/<id>). */
-  id: number;
+  /**
+   * Used in the URL (#/spel/<id>): the BGG id as text, or a slug of the
+   * name for games that aren't on BoardGameGeek.
+   */
+  id: string;
+  /** null when the game isn't on BoardGameGeek – then only sheet data is shown. */
+  bggId: number | null;
   name: string;
   year: number | null;
   /** Plain text with paragraph breaks as "\n". */

@@ -58,3 +58,17 @@ describe("browsing the game shelf", () => {
     ]);
   });
 });
+
+describe("games that aren't on BoardGameGeek", () => {
+  it("still get a page, without a BGG link", async () => {
+    const user = userEvent.setup();
+    render(<Browse games={games} />);
+
+    const party = screen.getByRole("region", { name: "Party" });
+    await user.click(within(party).getByRole("link", { name: /Hitster – Guilty Pleasures/ }));
+
+    const dialog = await screen.findByRole("dialog", { name: "Hitster – Guilty Pleasures" });
+    expect(within(dialog).getByText(/Finns inte på BGG/)).toBeInTheDocument();
+    expect(within(dialog).queryByRole("link", { name: /BoardGameGeek/ })).not.toBeInTheDocument();
+  });
+});

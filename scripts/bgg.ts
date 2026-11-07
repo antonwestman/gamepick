@@ -3,7 +3,7 @@ import { XMLParser } from "fast-xml-parser";
 import type { Range } from "../src/lib/game.ts";
 
 export type BggGame = {
-  id: number;
+  bggId: number;
   name: string;
   year: number | null;
   description: string;
@@ -134,7 +134,7 @@ export function parseThings(xml: string): BggGame[] {
 
     return [
       {
-        id,
+        bggId: id,
         name: decodeEntities(String(primary.value)),
         year: toNumber(item.yearpublished),
         description: cleanDescription(item.description),
@@ -201,12 +201,13 @@ export async function fetchGames(ids: number[], token: string | undefined): Prom
   return games;
 }
 
-/** Finds a board game id by name: exact match first, then best fuzzy match. */
+/**
+ * Finds a board game id by its exact name. We deliberately skip fuzzy matches:
+ * BGG's search order is arbitrary, and showing the wrong game is worse than
+ * showing only what's in the sheet.
+ */
 export async function searchGameId(name: string, token: string | undefined): Promise<number | null> {
   const query = encodeURIComponent(name);
-  const exact = parseSearch(await bggFetch(`/search?type=boardgame&exact=1&query=${query}`, token));
-  if (exact[0]) return exact[0].id;
-  await sleep(2000);
-  const fuzzy = parseSearch(await bggFetch(`/search?type=boardgame&query=${query}`, token));
-  return fuzzy[0]?.id ?? null;
+  const exact = parseSearch(await bggFetch(`/search?type=boardgame,boardgameexpansion&exact=1&query=${query}`, token));
+  return exact[0]?.id ?? null;
 }

@@ -13,8 +13,8 @@
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import type { GameLibrary } from "../src/lib/game.ts";
 import { fetchGames, searchGameId } from "./bgg.ts";
-import { mergeEntries, type ResolvedEntry } from "./merge.ts";
-import { parseSheet } from "./sheet.ts";
+import { mergeEntries } from "./merge.ts";
+import { parseSheet, type SheetEntry } from "./sheet.ts";
 
 const OUT_DIR = new URL("../public/", import.meta.url);
 const OUT_FILE = new URL("games.json", OUT_DIR);
@@ -56,25 +56,24 @@ async function main() {
   const entries = parseSheet(await fetchSheet());
   console.log(`Sheet: ${entries.length} rows`);
 
-  const resolved: ResolvedEntry[] = [];
+  const resolved: SheetEntry[] = [];
   for (const entry of entries) {
-    if (entry.bggId !== null) {
-      resolved.push({ ...entry, bggId: entry.bggId });
+    if (entry.bggId !== null || entry.name === null) {
+      resolved.push(entry);
       continue;
     }
-    const name = entry.name ?? "";
-    const id = await searchGameId(name, token);
+    const id = await searchGameId(entry.name, token);
     if (id === null) {
-      console.warn(`⚠ No BGG match for "${name}" – add its bgg_id in the sheet.`);
-      continue;
+      console.warn(`⚠ No exact BGG match for "${entry.name}" – showing sheet data only. Add its bgg_id to fix.`);
+    } else {
+      console.log(`  "${entry.name}" → bgg_id ${id} (add it to the sheet to skip the search)`);
     }
-    console.log(`  "${name}" → bgg_id ${id} (add it to the sheet to skip the search)`);
     resolved.push({ ...entry, bggId: id });
   }
 
-  const ids = [...new Set(resolved.map((entry) => entry.bggId))];
+  const ids = [...new Set(resolved.flatMap((entry) => (entry.bggId === null ? [] : [entry.bggId])))];
   const bggGames = await fetchGames(ids, token);
-  const missing = ids.filter((id) => !bggGames.some((game) => game.id === id));
+  const missing = ids.filter((id) => !bggGames.some((game) => game.bggId === id));
   if (missing.length > 0) console.warn(`⚠ BGG returned nothing for ids: ${missing.join(", ")}`);
 
   const library: GameLibrary = {

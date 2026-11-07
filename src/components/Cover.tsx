@@ -7,7 +7,7 @@ export function Cover({ game, className = "", loading = "lazy" }: Props) {
   if (game.image) {
     return <img className={`cover ${className}`} src={game.image} alt="" loading={loading} decoding="async" />;
   }
-  const hue = (game.id * 47) % 360;
+  const hue = [...game.id].reduce((sum, char) => (sum * 31 + char.charCodeAt(0)) % 360, 7);
   return (
     <div
       className={`cover cover--fallback ${className}`}

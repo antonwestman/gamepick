@@ -2,21 +2,36 @@ import type { Game } from "../src/lib/game.ts";
 import type { BggGame } from "./bgg.ts";
 import type { SheetEntry } from "./sheet.ts";
 
-export type ResolvedEntry = Omit<SheetEntry, "bggId"> & { bggId: number };
+/** "Hitster – Guilty Pleasures" → "hitster-guilty-pleasures" */
+export function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[åä]/g, "a")
+    .replace(/ö/g, "o")
+    .normalize("NFKD")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 /**
  * Combines our sheet rows with BGG data. Sheet order is kept (it's used for
  * "Senast tillagda"), duplicate rows for the same game are merged, and the
- * name from the sheet wins over BGG's (handy for Swedish titles).
+ * name from the sheet wins over BGG's (handy for Swedish titles). Rows that
+ * aren't on BGG are kept with just the sheet's data.
  */
-export function mergeEntries(entries: ResolvedEntry[], bggGames: BggGame[]): Game[] {
-  const bggById = new Map(bggGames.map((game) => [game.id, game]));
-  const games = new Map<number, Game>();
+export function mergeEntries(entries: SheetEntry[], bggGames: BggGame[]): Game[] {
+  const bggById = new Map(bggGames.map((game) => [game.bggId, game]));
+  const games = new Map<string, Game>();
 
   for (const entry of entries) {
-    const existing = games.get(entry.bggId);
+    const bgg = entry.bggId === null ? undefined : bggById.get(entry.bggId);
+    const name = entry.name ?? bgg?.name;
+    if (!name) continue; // nothing to show
+
+    const id = entry.bggId === null ? slugify(name) : String(entry.bggId);
+    const existing = games.get(id);
     if (existing) {
-      games.set(entry.bggId, {
+      games.set(id, {
         ...existing,
         collections: [...new Set([...existing.collections, ...entry.collections])],
         featured: existing.featured || entry.featured,
@@ -26,12 +41,7 @@ export function mergeEntries(entries: ResolvedEntry[], bggGames: BggGame[]): Gam
       continue;
     }
 
-    const bgg = bggById.get(entry.bggId);
-    const name = entry.name ?? bgg?.name;
-    if (!name) continue; // nothing to show
-
-    games.set(entry.bggId, {
-      id: entry.bggId,
+    games.set(id, {
       year: null,
       description: "",
       image: null,
@@ -46,6 +56,8 @@ export function mergeEntries(entries: ResolvedEntry[], bggGames: BggGame[]): Gam
       mechanics: [],
       designers: [],
       ...bgg,
+      id,
+      bggId: entry.bggId,
       name,
       collections: [...new Set(entry.collections)],
       featured: entry.featured,

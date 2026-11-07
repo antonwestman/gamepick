@@ -44,9 +44,11 @@ export function Hero({ games }: { games: Game[] }) {
             <a className="button button--primary" href={gameHref(current.id)}>
               Läs mer
             </a>
-            <a className="button" href={bggUrl(current.id)} target="_blank" rel="noreferrer">
-              BoardGameGeek ↗
-            </a>
+            {current.bggId !== null && (
+              <a className="button" href={bggUrl(current.bggId)} target="_blank" rel="noreferrer">
+                BoardGameGeek ↗
+              </a>
+            )}
           </div>
         </div>
         <div className="hero__art">

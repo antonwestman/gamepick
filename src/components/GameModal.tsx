@@ -97,9 +97,11 @@ export function GameModal({ game, similar }: Props) {
           <TagList title="Mekanismer" items={game.mechanics} />
           <TagList title="Speldesign" items={game.designers} />
 
-          <a className="button" href={bggUrl(game.id)} target="_blank" rel="noreferrer">
-            Läs mer på BoardGameGeek ↗
-          </a>
+          {game.bggId !== null && (
+            <a className="button" href={bggUrl(game.bggId)} target="_blank" rel="noreferrer">
+              Läs mer på BoardGameGeek ↗
+            </a>
+          )}
         </div>
 
         {similar.length > 0 && <Rail rail={{ id: `liknande-${game.id}`, title: "Liknande spel", games: similar }} />}

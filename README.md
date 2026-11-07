@@ -10,7 +10,7 @@ Lägg till en rad i arket:
 
 | Kolumn      | Exempel                       | Beskrivning |
 |-------------|-------------------------------|-------------|
-| `bgg_id`    | `266192` eller BGG-länken     | Id:t från BGG-adressen (`boardgamegeek.com/boardgame/266192/wingspan`). Kan lämnas tomt – då söks spelet upp på namnet. |
+| `bgg_id`    | `266192` eller BGG-länken     | Id:t från BGG-adressen (`boardgamegeek.com/boardgame/266192/wingspan`). Kan lämnas tomt – då söks spelet upp på exakt namn. Spel som inte finns på BGG (t.ex. Hitster) visas ändå, med bara arkets info. |
 | `namn`      | `Wingspan`                    | Valfritt. Visas i stället för BGG:s namn (bra för svenska titlar). |
 | `samlingar` | `Favoriter, Familj`           | Egna rails, kommaseparerade. Ordningen i arket styr ordningen på sidan. |
 | `utvald`    | `ja`                          | Visas i heron högst upp (`ja`, `x`, `1` funkar). |
