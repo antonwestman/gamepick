@@ -23,6 +23,24 @@ Utöver egna samlingar skapas rails automatiskt: Senast tillagda (nederst i arke
 Snabba spel, 6+ spelare, Bara för två, Lätta att lära, Tunga strategispel och de vanligaste BGG-kategorierna.
 ”Vi är”-knapparna filtrerar hela sidan på antal spelare.
 
+## Rösta på kvällens spel
+
+Tryck 👍 på ett spel för att rösta. Första gången får du skriva ditt namn (det sparas i webbläsaren).
+Spelen med flest röster hamnar i raden **Kvällens topplista** högst upp, och alla ser varandras röster
+(sidan uppdateras var 15:e sekund). Inför nästa spelkväll: ta bort raderna i fliken **Röster** i arket.
+
+Rösterna sparas i arket via ett litet Google Apps Script, eftersom GitHub Pages bara kan visa statiska filer.
+Engångs-setup:
+
+1. Öppna arket → **Tillägg → Apps Script**. Ersätt innehållet med [`apps-script/Code.gs`](apps-script/Code.gs) och spara.
+2. **Distribuera → Ny distribution** → typ *Webbapp*. *Kör som:* Jag, *Vem har åtkomst:* Alla. Godkänn behörigheterna.
+3. Kopiera webbappens URL (slutar på `/exec`) och lägg den som repo-variabel `VOTES_URL`
+   (Settings → Secrets and variables → Actions → Variables).
+4. Kör om bygget (Actions → Deploy to GitHub Pages → Run workflow).
+
+Utan `VOTES_URL` döljs röstningen. Det finns ingen inloggning, så vem som helst med länken kan rösta i vems namn som helst –
+det är tänkt för kompisgänget.
+
 ## Hur det funkar
 
 ```

@@ -4,10 +4,14 @@ import { bggUrl, formatPlayers, formatPlayTime, weightLabel } from "../lib/forma
 import { closeGame } from "../lib/route.ts";
 import { Cover } from "./Cover.tsx";
 import { Rail } from "./Rail.tsx";
+import { VoteButton } from "./VoteButton.tsx";
+import { useVotes } from "../lib/VotesContext.tsx";
 
 type Props = { game: Game; similar: Game[] };
 
 export function GameModal({ game, similar }: Props) {
+  const votes = useVotes();
+  const voters = votes?.tally.get(game.id) ?? [];
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -70,6 +74,15 @@ export function GameModal({ game, similar }: Props) {
         </header>
 
         <div className="modal__body">
+          {votes && (
+            <div className="modal__vote">
+              <VoteButton game={game} variant="large" />
+              <p className="modal__voters">
+                {voters.length > 0 ? `Vill spela: ${voters.join(", ")}` : "Ingen har röstat än."}
+              </p>
+            </div>
+          )}
+
           <dl className="stats">
             {stats
               .filter(([, value]) => value !== null)
