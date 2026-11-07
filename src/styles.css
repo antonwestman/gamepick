@@ -243,3 +243,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: var(--bg); color: var(--text); font: inherit;
 }
 .spinner .modal__close { top: 12px; right: 12px; }
+
+/* ---------- new version ---------- */
+.update-banner {
+  position: fixed; z-index: 30; left: 50%; transform: translateX(-50%);
+  bottom: max(16px, env(safe-area-inset-bottom)); width: max-content; max-width: calc(100% - 32px);
+  padding: 12px 20px; border: 0; border-radius: 999px; background: var(--text); color: var(--bg);
+  font-weight: 700; box-shadow: 0 10px 30px rgb(0 0 0 / 0.5);
+}
