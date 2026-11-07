@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { Game } from "./lib/game.ts";
 import { buildRails, heroGames, searchGames, similarGames, supportsPlayerCount, type Rail as RailData } from "./lib/rails.ts";
 import { rankByVotes } from "./lib/votes.ts";
@@ -10,6 +10,7 @@ import { GameModal } from "./components/GameModal.tsx";
 import { Header } from "./components/Header.tsx";
 import { Hero } from "./components/Hero.tsx";
 import { Rail } from "./components/Rail.tsx";
+import { StarterSpinner } from "./components/StarterSpinner.tsx";
 
 export function App() {
   const state = useLibrary();
@@ -22,6 +23,7 @@ export function App() {
 export function Browse({ games }: { games: Game[] }) {
   const [query, setQuery] = useState("");
   const [playerCount, setPlayerCount] = useState<number | null>(null);
+  const [spinnerOpen, setSpinnerOpen] = useState(false);
   const selectedId = useSelectedGameId();
   const votes = useVotes();
 
@@ -41,6 +43,7 @@ export function Browse({ games }: { games: Game[] }) {
   }, [votes, visible]);
 
   const isSearching = query.trim() !== "";
+  const closeSpinner = useCallback(() => setSpinnerOpen(false), []);
 
   return (
     <>
@@ -49,6 +52,7 @@ export function Browse({ games }: { games: Game[] }) {
         onQueryChange={setQuery}
         playerCount={playerCount}
         onPlayerCountChange={setPlayerCount}
+        onOpenSpinner={() => setSpinnerOpen(true)}
       />
       <main>
         {votes?.error && (
@@ -91,6 +95,7 @@ export function Browse({ games }: { games: Game[] }) {
         Speldata från <a href="https://boardgamegeek.com">BoardGameGeek</a>.
       </footer>
       {selected && <GameModal game={selected} similar={similarGames(selected, games)} />}
+      {spinnerOpen && <StarterSpinner onClose={closeSpinner} />}
     </>
   );
 }
