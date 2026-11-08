@@ -51,12 +51,6 @@ describe("Pannlappen", () => {
     expect(within(rail).getByRole("link", { name: /Pannlappen/ })).toHaveAttribute("href", "#/mobilspel/pannlappen");
   });
 
-  it("still opens from the old Heads Up link", () => {
-    window.location.hash = "#/mobilspel/heads-up";
-    render(<App />);
-    expect(screen.getByRole("heading", { name: "Pannlappen" })).toBeInTheDocument();
-  });
-
   it("plays a round with taps and shows the score", async () => {
     const user = setup();
     render(<App />);

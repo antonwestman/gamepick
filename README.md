@@ -50,7 +50,7 @@ det är tänkt för kompisgänget.
 
 ## Mobilspel: Pannlappen
 
-Raden **Mobilspel** länkar till Pannlappen (`#/mobilspel/pannlappen`; hette tidigare Heads Up och den gamla länken funkar fortfarande). Välj en kategori, sätt telefonen på tvären i pannan
+Raden **Mobilspel** länkar till Pannlappen (`#/mobilspel/pannlappen`). Välj en kategori, sätt telefonen på tvären i pannan
 och luta nedåt för rätt, uppåt för pass. 60 sekunder per runda. Utan rörelsesensor (eller om man nekar den på iPhone)
 trycker man på höger/vänster halva av skärmen i stället.
 

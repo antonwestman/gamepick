@@ -3,8 +3,6 @@ import { useSyncExternalStore } from "react";
 /** Routes are hashes so they work on GitHub Pages without a 404 fallback. */
 export const gameHref = (id: string) => `#/spel/${encodeURIComponent(id)}`;
 export const PANNLAPPEN_HREF = "#/mobilspel/pannlappen";
-/** Pannlappen used to be called Heads Up – old links and bookmarks still work. */
-const OLD_PANNLAPPEN_HREF = "#/mobilspel/heads-up";
 
 function subscribe(onChange: () => void) {
   window.addEventListener("hashchange", onChange);
@@ -19,8 +17,7 @@ export function useSelectedGameId(): string | null {
 }
 
 export function useIsPannlappenRoute(): boolean {
-  const hash = useHash();
-  return hash === PANNLAPPEN_HREF || hash === OLD_PANNLAPPEN_HREF;
+  return useHash() === PANNLAPPEN_HREF;
 }
 
 export function closeGame() {
