@@ -1,5 +1,5 @@
 import { useEffect, useEffectEvent } from "react";
-import { tiltOf } from "./headsUp.ts";
+import { tiltOf } from "./pannlappen.ts";
 
 /** iOS 13+ hides motion sensors behind a permission prompt; other browsers don't have the method. */
 type OrientationEventWithPermission = typeof DeviceOrientationEvent & {

@@ -1,4 +1,4 @@
-import type { Words } from "./headsUpDecks.ts";
+import type { Words } from "./pannlappenDecks.ts";
 
 export const EN = {
   djur: {

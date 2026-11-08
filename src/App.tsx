@@ -3,12 +3,12 @@ import type { Game } from "./lib/game.ts";
 import { buildRails, heroGames, searchGames, similarGames, supportsPlayerCount, type Rail as RailData } from "./lib/rails.ts";
 import { rankByVotes } from "./lib/votes.ts";
 import { useGameNight } from "./lib/GameNightContext.tsx";
-import { useIsHeadsUpRoute, useSelectedGameId } from "./lib/route.ts";
+import { useIsPannlappenRoute, useSelectedGameId } from "./lib/route.ts";
 import { useLibrary } from "./lib/useLibrary.ts";
 import { GameCard } from "./components/GameCard.tsx";
 import { GameModal } from "./components/GameModal.tsx";
 import { Header } from "./components/Header.tsx";
-import { HeadsUp } from "./components/HeadsUp.tsx";
+import { Pannlappen } from "./components/Pannlappen.tsx";
 import { Hero } from "./components/Hero.tsx";
 import { MobileGamesRail } from "./components/MobileGamesRail.tsx";
 import { Rail } from "./components/Rail.tsx";
@@ -17,9 +17,9 @@ import { unlockAudio } from "./lib/spinSound.ts";
 
 export function App() {
   const state = useLibrary();
-  const headsUp = useIsHeadsUpRoute();
+  const pannlappen = useIsPannlappenRoute();
 
-  if (headsUp) return <HeadsUp />;
+  if (pannlappen) return <Pannlappen />;
   if (state.status === "loading") return <p className="status">Hämtar spelhyllan…</p>;
   if (state.status === "error") return <p className="status">Kunde inte läsa spelen ({state.message}).</p>;
   return <Browse games={state.library.games} />;

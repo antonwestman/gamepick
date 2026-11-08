@@ -13,11 +13,11 @@ import {
   type Answer,
   type Played,
   type Round,
-} from "../lib/headsUp.ts";
-import { DECKS, DIFFICULTIES, LANGUAGES, playerDeck, type Deck, type PlayerDeck } from "../lib/headsUpDecks.ts";
+} from "../lib/pannlappen.ts";
+import { DECKS, DIFFICULTIES, LANGUAGES, playerDeck, type Deck, type PlayerDeck } from "../lib/pannlappenDecks.ts";
 import { useGameNight } from "../lib/GameNightContext.tsx";
 import { CustomDeckEditor } from "./CustomDeckEditor.tsx";
-import { useHeadsUpSettings, type Settings } from "../lib/headsUpSettings.ts";
+import { usePannlappenSettings, type Settings } from "../lib/pannlappenSettings.ts";
 import { requestTiltPermission, useTilt, useWakeLock } from "../lib/useTilt.ts";
 
 type Playing = Extract<Round, { phase: "playing" }>;
@@ -48,9 +48,9 @@ function useTimeout(at: number | null, onDue: () => void) {
 const secondsLeft = (until: number, now: number, max: number) =>
   Math.min(max, Math.max(0, Math.ceil((until - now) / 1000)));
 
-export function HeadsUp() {
+export function Pannlappen() {
   const [{ round, played, seen }, dispatch] = useReducer(gameReducer, NEW_GAME);
-  const [settings, setSettings] = useHeadsUpSettings();
+  const [settings, setSettings] = usePannlappenSettings();
   const [tiltAllowed, setTiltAllowed] = useState(true);
   /** Which category is open in the editor: null = none, { deck: null } = a new one. */
   const [editing, setEditing] = useState<{ deck: PlayerDeck | null } | null>(null);
@@ -89,7 +89,7 @@ export function HeadsUp() {
   const quit = () => dispatch({ type: "quit" });
 
   return (
-    <div className="headsup">
+    <div className="pannlappen">
       {round === null && editing !== null && gameNight && (
         <CustomDeckEditor
           deck={editing.deck}
@@ -149,19 +149,19 @@ function Setup(props: SetupProps) {
   const { customDecks, onEditDeck } = props;
   const teamGame = isTeamGame(settings.teams);
   return (
-    <section className="headsup__pick" aria-labelledby="headsup-title">
-      <a className="headsup__back" href="#/">
+    <section className="pannlappen__pick" aria-labelledby="pannlappen-title">
+      <a className="pannlappen__back" href="#/">
         ‹ gamepick
       </a>
-      <h1 id="headsup-title">Heads Up</h1>
-      <p className="headsup__how">
+      <h1 id="pannlappen-title">Pannlappen</h1>
+      <p className="pannlappen__how">
         Håll telefonen på tvären mot pannan med skärmen utåt. Kompisarna förklarar ordet du ser – utan att säga det.
         <br />
         <strong>Luta nedåt</strong> när du gissat rätt, <strong>luta uppåt</strong> för att passa. 60 sekunder per runda.
       </p>
 
-      <h2 className="headsup__label">Språk på orden</h2>
-      <div className="headsup__segments" role="group" aria-label="Språk på orden">
+      <h2 className="pannlappen__label">Språk på orden</h2>
+      <div className="pannlappen__segments" role="group" aria-label="Språk på orden">
         {LANGUAGES.map(({ id, label }) => (
           <button
             key={id}
@@ -176,8 +176,8 @@ function Setup(props: SetupProps) {
         ))}
       </div>
 
-      <h2 className="headsup__label">Svårighet</h2>
-      <div className="headsup__segments" role="group" aria-label="Svårighet">
+      <h2 className="pannlappen__label">Svårighet</h2>
+      <div className="pannlappen__segments" role="group" aria-label="Svårighet">
         {DIFFICULTIES.map(({ id, label }) => (
           <button
             key={id}
@@ -191,26 +191,26 @@ function Setup(props: SetupProps) {
         ))}
       </div>
 
-      <h2 className="headsup__label">Lag</h2>
+      <h2 className="pannlappen__label">Lag</h2>
       <TeamEditor teams={settings.teams} onChange={(teams) => onSettingsChange({ ...settings, teams })} />
       {teamGame && (
         <>
           {played.length > 0 && <Scoreboard teams={settings.teams} played={played} />}
-          <p className="headsup__turn">
+          <p className="pannlappen__turn">
             Nu spelar <strong>{upNext}</strong>
           </p>
         </>
       )}
 
-      <div className="headsup__decks-header">
-        <h2 className="headsup__label">Välj kategori</h2>
+      <div className="pannlappen__decks-header">
+        <h2 className="pannlappen__label">Välj kategori</h2>
         {hasSeenWords && (
           <button type="button" className="chip" onClick={onNewGame}>
             {teamGame ? "Nytt spel (nollställ poäng och ord)" : "Nytt spel (alla ord tillbaka)"}
           </button>
         )}
       </div>
-      <ul className="headsup__decks">
+      <ul className="pannlappen__decks">
         {DECKS.map((deck) => (
           <li key={deck.id}>
             <DeckButton deck={deck} left={wordsLeft(deck)} showLeft={hasSeenWords} onPick={onPick} />
@@ -220,14 +220,14 @@ function Setup(props: SetupProps) {
 
       {customDecks && (
         <>
-          <h2 className="headsup__label">Egna kategorier</h2>
-          <ul className="headsup__decks" aria-label="Egna kategorier">
+          <h2 className="pannlappen__label">Egna kategorier</h2>
+          <ul className="pannlappen__decks" aria-label="Egna kategorier">
             {customDecks.map((deck) => (
-              <li key={deck.id} className="headsup__custom">
+              <li key={deck.id} className="pannlappen__custom">
                 <DeckButton deck={deck} left={wordsLeft(deck)} showLeft={hasSeenWords} onPick={onPick} />
                 <button
                   type="button"
-                  className="headsup__edit"
+                  className="pannlappen__edit"
                   aria-label={`Ändra ${deck.title}`}
                   onClick={() => onEditDeck(deck)}
                 >
@@ -236,8 +236,8 @@ function Setup(props: SetupProps) {
               </li>
             ))}
             <li>
-              <button type="button" className="headsup__deck headsup__deck--new" onClick={() => onEditDeck(null)}>
-                <span className="headsup__emoji" aria-hidden="true">
+              <button type="button" className="pannlappen__deck pannlappen__deck--new" onClick={() => onEditDeck(null)}>
+                <span className="pannlappen__emoji" aria-hidden="true">
                   ＋
                 </span>
                 Ny kategori
@@ -254,16 +254,16 @@ type DeckButtonProps = { deck: Deck; left: number; showLeft: boolean; onPick: (d
 
 function DeckButton({ deck, left, showLeft, onPick }: DeckButtonProps) {
   return (
-    <button type="button" className="headsup__deck" onClick={() => onPick(deck)} disabled={left === 0}>
-      <span className="headsup__emoji" aria-hidden="true">
+    <button type="button" className="pannlappen__deck" onClick={() => onPick(deck)} disabled={left === 0}>
+      <span className="pannlappen__emoji" aria-hidden="true">
         {deck.emoji}
       </span>
       {deck.title}
       {showLeft ? (
-        <span className="headsup__left">{left === 0 ? "Slut på ord" : `${left} ord kvar`}</span>
+        <span className="pannlappen__left">{left === 0 ? "Slut på ord" : `${left} ord kvar`}</span>
       ) : (
         deck.kind === "custom" && (
-          <span className="headsup__left">
+          <span className="pannlappen__left">
             {deck.by ? `av ${deck.by} · ` : ""}
             {deck.words.length} ord
           </span>
@@ -287,7 +287,7 @@ function TeamEditor({ teams, onChange }: { teams: string[]; onChange: (teams: st
   return (
     <>
       {teams.length > 0 && (
-        <ul className="spinner__names headsup__teams" aria-label="Lag">
+        <ul className="spinner__names pannlappen__teams" aria-label="Lag">
           {teams.map((team) => (
             <li key={team} className="tag">
               {team}
@@ -315,7 +315,7 @@ function TeamEditor({ teams, onChange }: { teams: string[]; onChange: (teams: st
           Lägg till lag
         </button>
       </form>
-      <p className="headsup__note-small">
+      <p className="pannlappen__note-small">
         {teams.length === 0 && "Utan lag spelar ni bara för skojs skull. Lägg till två eller fler för att räkna poäng."}
         {teams.length === 1 && "Lägg till ett lag till för att räkna poäng."}
         {isTeamGame(teams) && "Lagen turas om – poängen räknas ihop."}
@@ -328,7 +328,7 @@ function Scoreboard({ teams, played }: { teams: string[]; played: Played[] }) {
   const scores = teamScores(teams, played);
   const best = Math.max(...scores.map((s) => s.score));
   return (
-    <table className="headsup__scores">
+    <table className="pannlappen__scores">
       <caption>Ställning</caption>
       <tbody>
         {scores.map(({ team, score }) => (
@@ -345,11 +345,11 @@ function Scoreboard({ teams, played }: { teams: string[]; played: Played[] }) {
 function Countdown({ startsAt, team, onQuit }: { startsAt: number; team: string | null; onQuit: () => void }) {
   const now = useNow(true);
   return (
-    <section className="headsup__screen" aria-label="Gör dig redo">
+    <section className="pannlappen__screen" aria-label="Gör dig redo">
       <QuitButton onQuit={onQuit} />
-      {team && <p className="headsup__team">{team}</p>}
-      <p className="headsup__hint">Sätt telefonen i pannan!</p>
-      <p className="headsup__big" aria-live="polite">
+      {team && <p className="pannlappen__team">{team}</p>}
+      <p className="pannlappen__hint">Sätt telefonen i pannan!</p>
+      <p className="pannlappen__big" aria-live="polite">
         {Math.max(1, secondsLeft(startsAt, now, 3))}
       </p>
     </section>
@@ -364,28 +364,28 @@ function PlayingScreen({ round, tiltAllowed, onAnswer, onQuit }: PlayingProps) {
 
   return (
     <section
-      className={`headsup__screen headsup__screen--playing${seconds <= 10 ? " is-ending" : ""}`}
+      className={`pannlappen__screen pannlappen__screen--playing${seconds <= 10 ? " is-ending" : ""}`}
       aria-label="Spelar"
     >
       <QuitButton onQuit={onQuit} />
-      <p className="headsup__timer" aria-label={`${seconds} sekunder kvar`}>
+      <p className="pannlappen__timer" aria-label={`${seconds} sekunder kvar`}>
         {seconds}
       </p>
       {/* translate="no": a browser auto-translating the page would give the answer away in the wrong language. */}
-      <p className="headsup__word" aria-live="assertive" translate="no">
+      <p className="pannlappen__word" aria-live="assertive" translate="no">
         {currentWord(round)}
       </p>
-      <div className="headsup__taps">
-        <button type="button" className="headsup__tap headsup__tap--pass" onClick={() => onAnswer("pass")}>
+      <div className="pannlappen__taps">
+        <button type="button" className="pannlappen__tap pannlappen__tap--pass" onClick={() => onAnswer("pass")}>
           Pass
         </button>
-        <button type="button" className="headsup__tap headsup__tap--correct" onClick={() => onAnswer("correct")}>
+        <button type="button" className="pannlappen__tap pannlappen__tap--correct" onClick={() => onAnswer("correct")}>
           Rätt
         </button>
       </div>
-      {!tiltAllowed && <p className="headsup__note">Rörelsesensorn är avstängd – tryck på skärmen i stället.</p>}
+      {!tiltAllowed && <p className="pannlappen__note">Rörelsesensorn är avstängd – tryck på skärmen i stället.</p>}
       {round.flash && (
-        <div className={`headsup__flash headsup__flash--${round.flash.answer}`} role="status">
+        <div className={`pannlappen__flash pannlappen__flash--${round.flash.answer}`} role="status">
           {round.flash.answer === "correct" ? "Rätt!" : "Pass"}
         </div>
       )}
@@ -406,27 +406,27 @@ type SummaryProps = {
 function Summary({ round, teams, played, upNext, canContinue, onNext, onPickDeck }: SummaryProps) {
   const correct = correctCount(round.results);
   return (
-    <section className="headsup__summary" aria-labelledby="headsup-score">
-      <h1 id="headsup-score">{round.team ? `${round.team}: ${correct} rätt!` : `${correct} rätt!`}</h1>
-      <p className="headsup__how">
+    <section className="pannlappen__summary" aria-labelledby="pannlappen-score">
+      <h1 id="pannlappen-score">{round.team ? `${round.team}: ${correct} rätt!` : `${correct} rätt!`}</h1>
+      <p className="pannlappen__how">
         {round.deck.emoji} {round.deck.title}
       </p>
       {round.team && <Scoreboard teams={teams} played={played} />}
-      <ul className="headsup__results" aria-label="Ord">
+      <ul className="pannlappen__results" aria-label="Ord">
         {round.results.map((result, i) => (
-          <li key={i} className={`headsup__result headsup__result--${result.answer}`}>
+          <li key={i} className={`pannlappen__result pannlappen__result--${result.answer}`}>
             <span aria-hidden="true">{result.answer === "correct" ? "✓" : "✗"}</span> {result.word}
             <span className="visually-hidden">{result.answer === "correct" ? " – rätt" : " – pass"}</span>
           </li>
         ))}
       </ul>
-      <div className="headsup__actions">
+      <div className="pannlappen__actions">
         {canContinue ? (
           <button type="button" className="button button--primary" onClick={onNext}>
             {upNext ? `Nästa: ${upNext}` : "Spela igen"}
           </button>
         ) : (
-          <p className="headsup__note-small">Slut på ord i {round.deck.title} – välj en annan kategori.</p>
+          <p className="pannlappen__note-small">Slut på ord i {round.deck.title} – välj en annan kategori.</p>
         )}
         <button type="button" className="button" onClick={onPickDeck}>
           {upNext ? "Byt kategori / inställningar" : "Byt kategori"}
@@ -438,7 +438,7 @@ function Summary({ round, teams, played, upNext, canContinue, onNext, onPickDeck
 
 function QuitButton({ onQuit }: { onQuit: () => void }) {
   return (
-    <button type="button" className="headsup__quit" onClick={onQuit} aria-label="Avbryt rundan">
+    <button type="button" className="pannlappen__quit" onClick={onQuit} aria-label="Avbryt rundan">
       ✕
     </button>
   );

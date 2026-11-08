@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 
 /** Routes are hashes so they work on GitHub Pages without a 404 fallback. */
 export const gameHref = (id: string) => `#/spel/${encodeURIComponent(id)}`;
-export const HEADS_UP_HREF = "#/mobilspel/heads-up";
+export const PANNLAPPEN_HREF = "#/mobilspel/pannlappen";
 
 function subscribe(onChange: () => void) {
   window.addEventListener("hashchange", onChange);
@@ -16,8 +16,8 @@ export function useSelectedGameId(): string | null {
   return match?.[1] ? decodeURIComponent(match[1]) : null;
 }
 
-export function useIsHeadsUpRoute(): boolean {
-  return useHash() === HEADS_UP_HREF;
+export function useIsPannlappenRoute(): boolean {
+  return useHash() === PANNLAPPEN_HREF;
 }
 
 export function closeGame() {

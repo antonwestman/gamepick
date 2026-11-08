@@ -1,6 +1,6 @@
 import { DEFAULT_EMOJI, type CustomDeck } from "./customDecks.ts";
-import { EN } from "./headsUpWords.en.ts";
-import { SV } from "./headsUpWords.sv.ts";
+import { EN } from "./pannlappenWords.en.ts";
+import { SV } from "./pannlappenWords.sv.ts";
 
 export const DIFFICULTIES = [
   { id: "easy", label: "Lätt" },

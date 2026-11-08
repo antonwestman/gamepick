@@ -6,8 +6,8 @@ import { App, Browse } from "./App.tsx";
 import { parseWordList } from "./lib/customDecks.ts";
 import { GameNightProvider } from "./lib/GameNightContext.tsx";
 import type { GameLibrary } from "./lib/game.ts";
-import { gameReducer, NEW_GAME, tiltOf, wordsForRound, type Action } from "./lib/headsUp.ts";
-import { DECKS, type BuiltInDeck } from "./lib/headsUpDecks.ts";
+import { gameReducer, NEW_GAME, tiltOf, wordsForRound, type Action } from "./lib/pannlappen.ts";
+import { DECKS, type BuiltInDeck } from "./lib/pannlappenDecks.ts";
 import { fakeGameNightServer, GAME_NIGHT_URL } from "./test/fakeGameNight.ts";
 
 const { games } = sample satisfies GameLibrary;
@@ -24,13 +24,13 @@ function tilt(beta: number, gamma = 0) {
   });
 }
 
-const currentWordText = () => screen.getByRole("region", { name: "Spelar" }).querySelector(".headsup__word")?.textContent;
+const currentWordText = () => screen.getByRole("region", { name: "Spelar" }).querySelector(".pannlappen__word")?.textContent;
 
-describe("Heads Up", () => {
+describe("Pannlappen", () => {
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     window.localStorage.clear();
-    window.location.hash = "#/mobilspel/heads-up";
+    window.location.hash = "#/mobilspel/pannlappen";
   });
   afterEach(() => {
     vi.useRealTimers();
@@ -48,7 +48,7 @@ describe("Heads Up", () => {
   it("is listed under Mobilspel on the browse page", () => {
     render(<Browse games={games} />);
     const rail = screen.getByRole("region", { name: "Mobilspel" });
-    expect(within(rail).getByRole("link", { name: /Heads Up/ })).toHaveAttribute("href", "#/mobilspel/heads-up");
+    expect(within(rail).getByRole("link", { name: /Pannlappen/ })).toHaveAttribute("href", "#/mobilspel/pannlappen");
   });
 
   it("plays a round with taps and shows the score", async () => {
@@ -177,11 +177,11 @@ describe("Heads Up", () => {
   });
 });
 
-describe("Heads Up – own categories", () => {
+describe("Pannlappen – own categories", () => {
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     window.localStorage.clear();
-    window.location.hash = "#/mobilspel/heads-up";
+    window.location.hash = "#/mobilspel/pannlappen";
   });
   afterEach(() => {
     vi.useRealTimers();

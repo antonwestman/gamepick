@@ -18,7 +18,7 @@ export type GameNightApi = {
   removePlayer: (name: string) => void;
   spin: Spin | null;
   recordSpin: (winner: string) => void;
-  // Heads Up – null when the deployed Apps Script is too old to store categories.
+  // Pannlappen – null when the deployed Apps Script is too old to store categories.
   customDecks: CustomDeck[] | null;
   /** Creates or replaces the deck with this id. `by` is filled in with the voter's name. */
   saveDeck: (deck: Omit<CustomDeck, "by">) => void;

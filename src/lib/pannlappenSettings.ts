@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { DIFFICULTIES, LANGUAGES, type Difficulty, type Language } from "./headsUpDecks.ts";
+import { DIFFICULTIES, LANGUAGES, type Difficulty, type Language } from "./pannlappenDecks.ts";
 
 export type Settings = { language: Language; difficulty: Difficulty; teams: string[] };
 
+// The game's old name – kept so saved teams and language survive the rename.
 const KEY = "gamepick.headsUp";
 const DEFAULTS: Settings = { language: "sv", difficulty: "medium", teams: [] };
 
@@ -26,7 +27,7 @@ function read(): Settings {
 }
 
 /** Language, difficulty and teams, remembered on this phone until next game night. */
-export function useHeadsUpSettings(): [Settings, (next: Settings) => void] {
+export function usePannlappenSettings(): [Settings, (next: Settings) => void] {
   const [settings, setSettings] = useState(read);
   const update = (next: Settings) => {
     setSettings(next);

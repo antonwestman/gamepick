@@ -1,4 +1,4 @@
-import { deckWords, type Deck, type Difficulty, type Language } from "./headsUpDecks.ts";
+import { deckWords, type Deck, type Difficulty, type Language } from "./pannlappenDecks.ts";
 
 export const COUNTDOWN_MS = 3_000;
 export const ROUND_MS = 60_000;
