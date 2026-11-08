@@ -4,8 +4,6 @@ export const COUNTDOWN_MS = 3_000;
 export const ROUND_MS = 60_000;
 /** How long "Rätt!"/"Pass" covers the screen. Tilts are ignored meanwhile. */
 export const FLASH_MS = 700;
-/** Below this many unseen words we start reusing the deck rather than run dry mid-round. */
-const MIN_FRESH_WORDS = 10;
 
 export type Answer = "correct" | "pass";
 export type Result = { word: string; answer: Answer };
@@ -21,10 +19,13 @@ export type Round =
 
 export type Played = { team: string | null; results: Result[] };
 
-/** No round (null) means we're on the setup screen. `played` is every finished round since the last reset. */
-export type Game = { round: Round | null; played: Played[] };
+/**
+ * No round (null) means we're on the setup screen. `played` is every finished round since the last reset;
+ * `seen` is every word anyone has had on their forehead, so no word comes up twice in a game.
+ */
+export type Game = { round: Round | null; played: Played[]; seen: string[] };
 
-export const NEW_GAME: Game = { round: null, played: [] };
+export const NEW_GAME: Game = { round: null, played: [], seen: [] };
 
 export type Action =
   | { type: "start"; deck: Deck; team: string | null; words: string[]; now: number }
@@ -33,12 +34,25 @@ export type Action =
   | { type: "unflash" }
   | { type: "timeUp" }
   | { type: "quit" }
-  | { type: "resetScores" };
+  | { type: "newGame" };
+
+/** The answered words plus the one on screen, if any – it was seen even if time ran out. */
+function shownWords(round: Round): string[] {
+  switch (round.phase) {
+    case "countdown":
+      return [];
+    case "playing":
+      return round.words.slice(0, round.results.length + 1);
+    case "done":
+      return round.results.map((r) => r.word);
+  }
+}
 
 function finish(game: Game, round: Extract<Round, { phase: "playing" }>, results: Result[]): Game {
   return {
     round: { phase: "done", deck: round.deck, team: round.team, results },
     played: [...game.played, { team: round.team, results }],
+    seen: [...game.seen, ...shownWords({ ...round, results })],
   };
 }
 
@@ -57,9 +71,10 @@ export function gameReducer(game: Game, action: Action): Game {
         },
       };
     case "quit":
-      return { ...game, round: null };
-    case "resetScores":
-      return { ...game, played: [] };
+      // Words from an abandoned round still count as seen.
+      return { ...game, round: null, seen: round?.phase === "playing" ? [...game.seen, ...shownWords(round)] : game.seen };
+    case "newGame":
+      return NEW_GAME;
     case "begin":
       if (round?.phase !== "countdown") return game;
       return {
@@ -103,18 +118,24 @@ export function teamScores(teams: readonly string[], played: readonly Played[]) 
   }));
 }
 
-/** A shuffled word list for the next round, skipping words already seen this game. */
+/** The words in a deck nobody has seen yet this game. */
+export function unseenWords(deck: Deck, language: Language, difficulty: Difficulty, seen: readonly string[]): string[] {
+  const used = new Set(seen);
+  return deck.words[language][difficulty].filter((word) => !used.has(word));
+}
+
+/**
+ * The unseen words, shuffled. Can be short or empty: a round ends early when
+ * it runs out, and an empty deck can't be started.
+ */
 export function wordsForRound(
   deck: Deck,
   language: Language,
   difficulty: Difficulty,
-  played: readonly Played[],
+  seen: readonly string[],
   random: () => number = Math.random,
 ): string[] {
-  const all = deck.words[language][difficulty];
-  const seen = new Set(played.flatMap((p) => p.results.map((r) => r.word)));
-  const fresh = all.filter((word) => !seen.has(word));
-  return shuffle(fresh.length >= MIN_FRESH_WORDS ? fresh : all, random);
+  return shuffle(unseenWords(deck, language, difficulty, seen), random);
 }
 
 export function shuffle<T>(items: readonly T[], random: () => number = Math.random): T[] {
