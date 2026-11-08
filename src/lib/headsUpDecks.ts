@@ -25,6 +25,12 @@ const DECK_INFO = [
   { id: "saker", title: "Saker hemma", emoji: "🛋️" },
   { id: "platser", title: "Platser", emoji: "🗺️" },
   { id: "jargong", title: "Corporatejargong", emoji: "💼" },
+  { id: "gaming", title: "Gaming", emoji: "🎮" },
+  { id: "bradspel", title: "Brädspel", emoji: "♟️" },
+  { id: "matte", title: "Matematik", emoji: "🧮" },
+  { id: "vaxter", title: "Växter", emoji: "🌿" },
+  { id: "historia", title: "Historia", emoji: "🏰" },
+  { id: "grekland", title: "Antikens Grekland", emoji: "🏛️" },
   { id: "blandat", title: "Lite av allt", emoji: "🎲" },
 ] as const;
 
