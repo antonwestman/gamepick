@@ -13,7 +13,7 @@ import {
   type Played,
   type Round,
 } from "../lib/headsUp.ts";
-import { DECKS, DIFFICULTIES, type Deck } from "../lib/headsUpDecks.ts";
+import { DECKS, DIFFICULTIES, LANGUAGES, type Deck } from "../lib/headsUpDecks.ts";
 import { useHeadsUpSettings, type Settings } from "../lib/headsUpSettings.ts";
 import { requestTiltPermission, useTilt, useWakeLock } from "../lib/useTilt.ts";
 
@@ -53,7 +53,7 @@ export function HeadsUp() {
 
   const start = async (deck: Deck) => {
     setTiltAllowed(await requestTiltPermission());
-    const words = wordsForRound(deck, settings.difficulty, played);
+    const words = wordsForRound(deck, settings.language, settings.difficulty, played);
     dispatch({ type: "start", deck, team: upNext, words, now: Date.now() });
   };
 
@@ -128,6 +128,22 @@ function Setup({ settings, onSettingsChange, played, upNext, onResetScores, onPi
         <br />
         <strong>Luta nedåt</strong> när du gissat rätt, <strong>luta uppåt</strong> för att passa. 60 sekunder per runda.
       </p>
+
+      <h2 className="headsup__label">Språk på orden</h2>
+      <div className="headsup__segments" role="group" aria-label="Språk på orden">
+        {LANGUAGES.map(({ id, label }) => (
+          <button
+            key={id}
+            type="button"
+            className="chip"
+            lang={id}
+            aria-pressed={settings.language === id}
+            onClick={() => onSettingsChange({ ...settings, language: id })}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
 
       <h2 className="headsup__label">Svårighet</h2>
       <div className="headsup__segments" role="group" aria-label="Svårighet">
@@ -277,7 +293,8 @@ function PlayingScreen({ round, tiltAllowed, onAnswer, onQuit }: PlayingProps) {
       <p className="headsup__timer" aria-label={`${seconds} sekunder kvar`}>
         {seconds}
       </p>
-      <p className="headsup__word" aria-live="assertive">
+      {/* translate="no": a browser auto-translating the page would give the answer away in the wrong language. */}
+      <p className="headsup__word" aria-live="assertive" translate="no">
         {currentWord(round)}
       </p>
       <div className="headsup__taps">

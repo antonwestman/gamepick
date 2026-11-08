@@ -1,4 +1,4 @@
-import type { Deck, Difficulty } from "./headsUpDecks.ts";
+import type { Deck, Difficulty, Language } from "./headsUpDecks.ts";
 
 export const COUNTDOWN_MS = 3_000;
 export const ROUND_MS = 60_000;
@@ -106,11 +106,12 @@ export function teamScores(teams: readonly string[], played: readonly Played[]) 
 /** A shuffled word list for the next round, skipping words already seen this game. */
 export function wordsForRound(
   deck: Deck,
+  language: Language,
   difficulty: Difficulty,
   played: readonly Played[],
   random: () => number = Math.random,
 ): string[] {
-  const all = deck.words[difficulty];
+  const all = deck.words[language][difficulty];
   const seen = new Set(played.flatMap((p) => p.results.map((r) => r.word)));
   const fresh = all.filter((word) => !seen.has(word));
   return shuffle(fresh.length >= MIN_FRESH_WORDS ? fresh : all, random);

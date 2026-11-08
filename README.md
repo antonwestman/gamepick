@@ -54,7 +54,7 @@ Raden **Mobilspel** länkar till Heads Up (`#/mobilspel/heads-up`). Välj en kat
 och luta nedåt för rätt, uppåt för pass. 60 sekunder per runda. Utan rörelsesensor (eller om man nekar den på iPhone)
 trycker man på höger/vänster halva av skärmen i stället.
 
-Välj svårighet (Lätt/Medel/Svår) och lägg till lag om ni vill tävla: lagen turas om och poängen räknas ihop.
+Välj språk på orden (svenska/engelska), svårighet (Lätt/Medel/Svår) och lägg till lag om ni vill tävla: lagen turas om och poängen räknas ihop.
 Ord som redan kommit under kvällen kommer inte igen. Inställningarna sparas i telefonen.
 Orden ligger i [`src/lib/headsUpDecks.ts`](src/lib/headsUpDecks.ts), uppdelade per kategori och svårighet.
 

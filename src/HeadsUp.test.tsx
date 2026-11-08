@@ -54,7 +54,7 @@ describe("Heads Up", () => {
 
     await user.click(screen.getByRole("button", { name: /Djur/ }));
     await skipCountdown();
-    expect(deck("djur").words.medium).toContain(currentWordText()); // medium is the default
+    expect(deck("djur").words.sv.medium).toContain(currentWordText()); // medium is the default
 
     await user.click(screen.getByRole("button", { name: "Rätt" }));
     expect(screen.getByRole("status")).toHaveTextContent("Rätt!");
@@ -83,7 +83,21 @@ describe("Heads Up", () => {
     await user.click(screen.getByRole("button", { name: /Corporatejargong/ }));
     await skipCountdown();
 
-    expect(deck("jargong").words.hard).toContain(currentWordText());
+    expect(deck("jargong").words.sv.hard).toContain(currentWordText());
+  });
+
+  it("plays in English when chosen, and remembers it", async () => {
+    const user = setup();
+    const { unmount } = render(<App />);
+
+    expect(screen.getByRole("button", { name: "Svenska" })).toHaveAttribute("aria-pressed", "true");
+    await user.click(screen.getByRole("button", { name: "English" }));
+    unmount();
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: /Djur/ }));
+    await skipCountdown();
+    expect(deck("djur").words.en.medium).toContain(currentWordText());
   });
 
   it("lets teams take turns and adds up their scores", async () => {
@@ -139,13 +153,13 @@ describe("Heads Up", () => {
 describe("wordsForRound", () => {
   it("skips words already played, until the deck runs low", () => {
     const animals = deck("djur");
-    const seen = animals.words.hard.slice(0, 5).map((word) => ({ word, answer: "pass" as const }));
-    const words = wordsForRound(animals, "hard", [{ team: null, results: seen }]);
-    expect(words).toHaveLength(animals.words.hard.length - 5);
+    const seen = animals.words.sv.hard.slice(0, 5).map((word) => ({ word, answer: "pass" as const }));
+    const words = wordsForRound(animals, "sv", "hard", [{ team: null, results: seen }]);
+    expect(words).toHaveLength(animals.words.sv.hard.length - 5);
 
-    const almostAll = animals.words.hard.slice(0, 15).map((word) => ({ word, answer: "pass" as const }));
-    expect(wordsForRound(animals, "hard", [{ team: null, results: almostAll }])).toHaveLength(
-      animals.words.hard.length,
+    const almostAll = animals.words.sv.hard.slice(0, 15).map((word) => ({ word, answer: "pass" as const }));
+    expect(wordsForRound(animals, "sv", "hard", [{ team: null, results: almostAll }])).toHaveLength(
+      animals.words.sv.hard.length,
     );
   });
 });
