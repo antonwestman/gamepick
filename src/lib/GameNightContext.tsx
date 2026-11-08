@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { NameDialog } from "../components/NameDialog.tsx";
+import type { CustomDeck } from "./customDecks.ts";
 import { applyChange, emptyState, fetchState, sendChange, type Change, type GameNightState, type Spin } from "./gameNight.ts";
 import { newSpinId, SHARED_LEAD_MS } from "./spinner.ts";
 import { tallyVotes, type Tally } from "./votes.ts";
@@ -17,6 +18,11 @@ export type GameNightApi = {
   removePlayer: (name: string) => void;
   spin: Spin | null;
   recordSpin: (winner: string) => void;
+  // Heads Up – null when the deployed Apps Script is too old to store categories.
+  customDecks: CustomDeck[] | null;
+  /** Creates or replaces the deck with this id. `by` is filled in with the voter's name. */
+  saveDeck: (deck: Omit<CustomDeck, "by">) => void;
+  deleteDeck: (id: string) => void;
   /** Poll often while something live (the spinner) is on screen. Returns the cleanup. */
   watchClosely: () => () => void;
 
@@ -132,9 +138,12 @@ function ConnectedGameNight({ url, children }: { url: string; children: ReactNod
       spin: state.spin,
       recordSpin: (winner) =>
         send({ action: "spin", id: newSpinId(Date.now() + SHARED_LEAD_MS), winner, by: voter ?? "" }),
+      customDecks: state.customDecks,
+      saveDeck: (deck) => send({ action: "saveDeck", ...deck, by: voter ?? "" }),
+      deleteDeck: (id) => send({ action: "deleteDeck", id }),
       watchClosely,
     };
-  }, [tally, voter, error, state.players, state.spin, send, watchClosely]);
+  }, [tally, voter, error, state.players, state.spin, state.customDecks, send, watchClosely]);
 
   const saveName = (name: string) => {
     storeVoter(name);
