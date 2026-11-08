@@ -8,6 +8,7 @@ import {
   nextTeam,
   ROUND_MS,
   teamScores,
+  unseenWords,
   wordsForRound,
   type Answer,
   type Played,
@@ -46,20 +47,23 @@ const secondsLeft = (until: number, now: number, max: number) =>
   Math.min(max, Math.max(0, Math.ceil((until - now) / 1000)));
 
 export function HeadsUp() {
-  const [{ round, played }, dispatch] = useReducer(gameReducer, NEW_GAME);
+  const [{ round, played, seen }, dispatch] = useReducer(gameReducer, NEW_GAME);
   const [settings, setSettings] = useHeadsUpSettings();
   const [tiltAllowed, setTiltAllowed] = useState(true);
   const upNext = nextTeam(settings.teams, played);
 
+  const wordsLeft = (deck: Deck) => unseenWords(deck, settings.language, settings.difficulty, seen).length;
+
   const start = async (deck: Deck) => {
     setTiltAllowed(await requestTiltPermission());
-    const words = wordsForRound(deck, settings.language, settings.difficulty, played);
+    const words = wordsForRound(deck, settings.language, settings.difficulty, seen);
+    if (words.length === 0) return;
     dispatch({ type: "start", deck, team: upNext, words, now: Date.now() });
   };
 
   const changeSettings = (next: Settings) => {
     // Scores are kept per team name, so new teams mean a new game.
-    if (next.teams.join("\n") !== settings.teams.join("\n")) dispatch({ type: "resetScores" });
+    if (next.teams.join("\n") !== settings.teams.join("\n")) dispatch({ type: "newGame" });
     setSettings(next);
   };
 
@@ -86,7 +90,9 @@ export function HeadsUp() {
           onSettingsChange={changeSettings}
           played={played}
           upNext={upNext}
-          onResetScores={() => dispatch({ type: "resetScores" })}
+          hasSeenWords={seen.length > 0}
+          wordsLeft={wordsLeft}
+          onNewGame={() => dispatch({ type: "newGame" })}
           onPick={start}
         />
       )}
@@ -98,6 +104,7 @@ export function HeadsUp() {
           teams={settings.teams}
           played={played}
           upNext={upNext}
+          canContinue={wordsLeft(round.deck) > 0}
           onNext={() => void start(round.deck)}
           onPickDeck={quit}
         />
@@ -111,11 +118,13 @@ type SetupProps = {
   onSettingsChange: (settings: Settings) => void;
   played: Played[];
   upNext: string | null;
-  onResetScores: () => void;
+  hasSeenWords: boolean;
+  wordsLeft: (deck: Deck) => number;
+  onNewGame: () => void;
   onPick: (deck: Deck) => void;
 };
 
-function Setup({ settings, onSettingsChange, played, upNext, onResetScores, onPick }: SetupProps) {
+function Setup({ settings, onSettingsChange, played, upNext, hasSeenWords, wordsLeft, onNewGame, onPick }: SetupProps) {
   const teamGame = isTeamGame(settings.teams);
   return (
     <section className="headsup__pick" aria-labelledby="headsup-title">
@@ -165,31 +174,35 @@ function Setup({ settings, onSettingsChange, played, upNext, onResetScores, onPi
       {teamGame && (
         <>
           {played.length > 0 && <Scoreboard teams={settings.teams} played={played} />}
-          <div className="headsup__turn">
-            <p>
-              Nu spelar <strong>{upNext}</strong>
-            </p>
-            {played.length > 0 && (
-              <button type="button" className="chip" onClick={onResetScores}>
-                Nollställ poäng
-              </button>
-            )}
-          </div>
+          <p className="headsup__turn">
+            Nu spelar <strong>{upNext}</strong>
+          </p>
         </>
       )}
 
-      <h2 className="headsup__label">Välj kategori</h2>
+      <div className="headsup__decks-header">
+        <h2 className="headsup__label">Välj kategori</h2>
+        {hasSeenWords && (
+          <button type="button" className="chip" onClick={onNewGame}>
+            {teamGame ? "Nytt spel (nollställ poäng och ord)" : "Nytt spel (alla ord tillbaka)"}
+          </button>
+        )}
+      </div>
       <ul className="headsup__decks">
-        {DECKS.map((deck) => (
-          <li key={deck.id}>
-            <button type="button" className="headsup__deck" onClick={() => onPick(deck)}>
-              <span className="headsup__emoji" aria-hidden="true">
-                {deck.emoji}
-              </span>
-              {deck.title}
-            </button>
-          </li>
-        ))}
+        {DECKS.map((deck) => {
+          const left = wordsLeft(deck);
+          return (
+            <li key={deck.id}>
+              <button type="button" className="headsup__deck" onClick={() => onPick(deck)} disabled={left === 0}>
+                <span className="headsup__emoji" aria-hidden="true">
+                  {deck.emoji}
+                </span>
+                {deck.title}
+                {hasSeenWords && <span className="headsup__left">{left === 0 ? "Slut på ord" : `${left} ord kvar`}</span>}
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -320,11 +333,12 @@ type SummaryProps = {
   teams: string[];
   played: Played[];
   upNext: string | null;
+  canContinue: boolean;
   onNext: () => void;
   onPickDeck: () => void;
 };
 
-function Summary({ round, teams, played, upNext, onNext, onPickDeck }: SummaryProps) {
+function Summary({ round, teams, played, upNext, canContinue, onNext, onPickDeck }: SummaryProps) {
   const correct = correctCount(round.results);
   return (
     <section className="headsup__summary" aria-labelledby="headsup-score">
@@ -342,9 +356,13 @@ function Summary({ round, teams, played, upNext, onNext, onPickDeck }: SummaryPr
         ))}
       </ul>
       <div className="headsup__actions">
-        <button type="button" className="button button--primary" onClick={onNext}>
-          {upNext ? `Nästa: ${upNext}` : "Spela igen"}
-        </button>
+        {canContinue ? (
+          <button type="button" className="button button--primary" onClick={onNext}>
+            {upNext ? `Nästa: ${upNext}` : "Spela igen"}
+          </button>
+        ) : (
+          <p className="headsup__note-small">Slut på ord i {round.deck.title} – välj en annan kategori.</p>
+        )}
         <button type="button" className="button" onClick={onPickDeck}>
           {upNext ? "Byt kategori / inställningar" : "Byt kategori"}
         </button>
