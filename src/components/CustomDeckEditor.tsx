@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { DECK_LIMITS, DEFAULT_EMOJI, newDeckId, parseWordList, type CustomDeck } from "../lib/customDecks.ts";
-import type { PlayerDeck } from "../lib/headsUpDecks.ts";
+import type { PlayerDeck } from "../lib/pannlappenDecks.ts";
 
 type Props = {
   /** null when making a new category. */
@@ -43,20 +43,20 @@ export function CustomDeckEditor({ deck, onSave, onDelete, onClose }: Props) {
   };
 
   return (
-    <form className="headsup__pick headsup__editor" onSubmit={save} aria-labelledby="deck-editor-title">
-      <button type="button" className="headsup__back" onClick={onClose}>
+    <form className="pannlappen__pick pannlappen__editor" onSubmit={save} aria-labelledby="deck-editor-title">
+      <button type="button" className="pannlappen__back" onClick={onClose}>
         ‹ Tillbaka
       </button>
       <h1 id="deck-editor-title">{deck ? "Ändra kategori" : "Ny kategori"}</h1>
-      <p className="headsup__how">Kategorin sparas i gamepick-arket och syns för alla. Samma ord används på alla svårighetsnivåer.</p>
+      <p className="pannlappen__how">Kategorin sparas i gamepick-arket och syns för alla. Samma ord används på alla svårighetsnivåer.</p>
 
-      <div className="headsup__editor-row">
-        <label className="headsup__field headsup__field--emoji">
-          <span className="headsup__label">Emoji</span>
+      <div className="pannlappen__editor-row">
+        <label className="pannlappen__field pannlappen__field--emoji">
+          <span className="pannlappen__label">Emoji</span>
           <input value={emoji} placeholder={DEFAULT_EMOJI} maxLength={DECK_LIMITS.emoji} onChange={(e) => setEmoji(e.target.value)} />
         </label>
-        <label className="headsup__field">
-          <span className="headsup__label">Namn</span>
+        <label className="pannlappen__field">
+          <span className="pannlappen__label">Namn</span>
           <input
             value={title}
             placeholder="Kontorsbingo"
@@ -67,8 +67,8 @@ export function CustomDeckEditor({ deck, onSave, onDelete, onClose }: Props) {
         </label>
       </div>
 
-      <label className="headsup__field">
-        <span className="headsup__label">Ord – ett per rad</span>
+      <label className="pannlappen__field">
+        <span className="pannlappen__label">Ord – ett per rad</span>
         <textarea
           value={text}
           rows={12}
@@ -76,25 +76,25 @@ export function CustomDeckEditor({ deck, onSave, onDelete, onClose }: Props) {
           onChange={(e) => setText(e.target.value)}
         />
       </label>
-      <div className="headsup__editor-meta">
-        <p className="headsup__note-small" aria-live="polite">
+      <div className="pannlappen__editor-meta">
+        <p className="pannlappen__note-small" aria-live="polite">
           {words.length} ord
           {tooFew && ` – minst ${DECK_LIMITS.minWords} behövs`}
           {words.length === DECK_LIMITS.maxWords && ` (max ${DECK_LIMITS.maxWords})`}
         </p>
-        <label className="chip headsup__upload">
+        <label className="chip pannlappen__upload">
           Ladda upp fil
           <input type="file" accept=".txt,.csv,text/plain,text/csv" onChange={(e) => void upload(e)} />
         </label>
       </div>
       {fileError && (
-        <p className="headsup__note-small" role="alert">
+        <p className="pannlappen__note-small" role="alert">
           {fileError}
         </p>
       )}
-      <p className="headsup__note-small">Textfil med ett ord per rad, eller kommaseparerat på en rad.</p>
+      <p className="pannlappen__note-small">Textfil med ett ord per rad, eller kommaseparerat på en rad.</p>
 
-      <div className="headsup__actions">
+      <div className="pannlappen__actions">
         <button type="submit" className="button button--primary" disabled={!canSave}>
           Spara
         </button>

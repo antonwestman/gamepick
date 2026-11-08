@@ -1,9 +1,9 @@
-import { HEADS_UP_HREF } from "../lib/route.ts";
+import { PANNLAPPEN_HREF } from "../lib/route.ts";
 import { RailFrame } from "./Rail.tsx";
 
 /** Games played on the phone itself. They live on their own routes, not in the sheet. */
 const MOBILE_GAMES = [
-  { id: "heads-up", name: "Heads Up", emoji: "🤳", href: HEADS_UP_HREF, meta: "3+ spelare · telefonen i pannan" },
+  { id: "pannlappen", name: "Pannlappen", emoji: "🤳", href: PANNLAPPEN_HREF, meta: "3+ spelare · telefonen i pannan" },
 ] as const;
 
 export function MobileGamesRail() {

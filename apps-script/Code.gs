@@ -1,7 +1,7 @@
 /**
- * gamepick – spelkvällens gemensamma läge: röster, spelare, "Vem börjar?"-snurren och egna Heads Up-kategorier.
+ * gamepick – spelkvällens gemensamma läge: röster, spelare, "Vem börjar?"-snurren och egna Pannlappen-kategorier.
  *
- * Sparas i flikarna "Röster", "Spelare", "Snurr" och "Heads Up" i Gamepick-arket (skapas automatiskt).
+ * Sparas i flikarna "Röster", "Spelare", "Snurr" och "Pannlappen" i Gamepick-arket (skapas automatiskt).
  * Installera: i arket, Tillägg → Apps Script, klistra in den här filen,
  * Distribuera → Ny distribution → Webbapp, Kör som: Jag, Åtkomst: Alla.
  * Uppdatera: Distribuera → Hantera distributioner → ✏️ → Version: Ny version → Distribuera.
@@ -13,17 +13,18 @@
  *   { action: "addPlayer", name }
  *   { action: "removePlayer", name }
  *   { action: "spin", id, winner, by }         spara senaste snurren
- *   { action: "saveDeck", id, title, emoji, by, words: [ord] }   skapa / ändra egen Heads Up-kategori
+ *   { action: "saveDeck", id, title, emoji, by, words: [ord] }   skapa / ändra egen Pannlappen-kategori
  *   { action: "deleteDeck", id }
  *
  * Nollställ inför nästa spelkväll genom att ta bort raderna i flikarna Röster, Spelare och Snurr.
- * Heads Up-kategorierna ligger kvar tills någon tar bort dem.
+ * Pannlappen-kategorierna ligger kvar tills någon tar bort dem.
  */
 const TABS = {
   votes: { name: "Röster", header: ["tid", "spel", "röstare"] },
   players: { name: "Spelare", header: ["namn"] },
   spin: { name: "Snurr", header: ["tid", "id", "vinnare", "snurrad av"] },
-  decks: { name: "Heads Up", header: ["uppdaterad", "id", "namn", "emoji", "skapad av", "ord (ett per rad)"] },
+  // Was "Heads Up" before the game was renamed; tab_ renames an existing tab.
+  decks: { name: "Pannlappen", oldName: "Heads Up", header: ["uppdaterad", "id", "namn", "emoji", "skapad av", "ord (ett per rad)"] },
 };
 
 const DECK_LIMITS = { title: 30, emoji: 8, word: 40, minWords: 5, maxWords: 300 };
@@ -31,6 +32,8 @@ const DECK_LIMITS = { title: 30, emoji: 8, word: 40, minWords: 5, maxWords: 300 
 function tab_(config) {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   let sheet = spreadsheet.getSheetByName(config.name);
+  const old = !sheet && config.oldName ? spreadsheet.getSheetByName(config.oldName) : null;
+  if (old) sheet = old.setName(config.name);
   if (!sheet) {
     sheet = spreadsheet.insertSheet(config.name);
     sheet.appendRow(config.header);

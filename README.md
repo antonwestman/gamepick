@@ -43,23 +43,23 @@ Engångs-setup:
    Den är inte hemlig – webbläsaren anropar den direkt.
 
 När `Code.gs` ändras: **Distribuera → Hantera distributioner → ✏️ → Version: Ny version → Distribuera**
-(URL:en är densamma). Med ett äldre skript fungerar röstningen, men snurrans lista sparas bara per telefon och egna Heads Up-kategorier döljs.
+(URL:en är densamma). Med ett äldre skript fungerar röstningen, men snurrans lista sparas bara per telefon och egna Pannlappen-kategorier döljs.
 
 Utan `VITE_VOTES_URL` döljs röstningen. Det finns ingen inloggning, så vem som helst med länken kan rösta i vems namn som helst –
 det är tänkt för kompisgänget.
 
-## Mobilspel: Heads Up
+## Mobilspel: Pannlappen
 
-Raden **Mobilspel** länkar till Heads Up (`#/mobilspel/heads-up`). Välj en kategori, sätt telefonen på tvären i pannan
+Raden **Mobilspel** länkar till Pannlappen (`#/mobilspel/pannlappen`; hette tidigare Heads Up och den gamla länken funkar fortfarande). Välj en kategori, sätt telefonen på tvären i pannan
 och luta nedåt för rätt, uppåt för pass. 60 sekunder per runda. Utan rörelsesensor (eller om man nekar den på iPhone)
 trycker man på höger/vänster halva av skärmen i stället.
 
 Välj språk på orden (svenska/engelska), svårighet (Lätt/Medel/Svår) och lägg till lag om ni vill tävla: lagen turas om och poängen räknas ihop.
 Inget ord kommer två gånger under ett spel (även ord man passat, avbrutit eller inte hann med räknas som sedda) – tar en kategori slut väljer man en annan eller trycker **Nytt spel**. Inställningarna sparas i telefonen.
-Orden ligger i [`src/lib/headsUpDecks.ts`](src/lib/headsUpDecks.ts), uppdelade per kategori och svårighet.
+Orden ligger i [`src/lib/pannlappenWords.sv.ts`](src/lib/pannlappenWords.sv.ts) och [`.en.ts`](src/lib/pannlappenWords.en.ts), uppdelade per kategori och svårighet.
 
 **Egna kategorier:** under *Egna kategorier* kan vem som helst skapa en kategori – skriv eller klistra in ord (ett per rad),
-eller ladda upp en textfil. Den sparas i fliken **Heads Up** i arket och syns för alla, och vem som helst kan ändra eller ta
+eller ladda upp en textfil. Den sparas i fliken **Pannlappen** i arket och syns för alla, och vem som helst kan ändra eller ta
 bort den. Egna kategorier har en ordlista som används oavsett språk och svårighet. Kräver att `Code.gs` är uppdaterad (se nedan).
 
 ## Hur det funkar

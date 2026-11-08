@@ -1,4 +1,4 @@
-/** Heads Up categories made by players, shared through the sheet (apps-script/Code.gs). */
+/** Pannlappen categories made by players, shared through the sheet (apps-script/Code.gs). */
 export type CustomDeck = { id: string; title: string; emoji: string; by: string; words: string[] };
 
 /** Same limits as the Apps Script, so the form can say what will happen before saving. */

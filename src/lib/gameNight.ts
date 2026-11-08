@@ -1,7 +1,7 @@
 /**
  * Shared state for the evening, stored in our sheet behind a Google Apps Script
  * (apps-script/Code.gs): votes, the players in "Vem börjar?", its latest spin
- * and the players' own Heads Up categories.
+ * and the players' own Pannlappen categories.
  */
 import type { CustomDeck } from "./customDecks.ts";
 import { applyVote, type Vote } from "./votes.ts";
