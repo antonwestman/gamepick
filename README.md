@@ -48,6 +48,12 @@ När `Code.gs` ändras: **Distribuera → Hantera distributioner → ✏️ → 
 Utan `VITE_VOTES_URL` döljs röstningen. Det finns ingen inloggning, så vem som helst med länken kan rösta i vems namn som helst –
 det är tänkt för kompisgänget.
 
+## Mobilspel: Heads Up
+
+Raden **Mobilspel** länkar till Heads Up (`#/mobilspel/heads-up`). Välj en kategori, sätt telefonen på tvären i pannan
+och luta nedåt för rätt, uppåt för pass. 60 sekunder per runda. Utan rörelsesensor (eller om man nekar den på iPhone)
+trycker man på höger/vänster halva av skärmen i stället. Orden ligger i [`src/lib/headsUpDecks.ts`](src/lib/headsUpDecks.ts).
+
 ## Hur det funkar
 
 ```

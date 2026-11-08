@@ -1,21 +1,25 @@
-import { useCallback, useMemo, useState } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 import type { Game } from "./lib/game.ts";
 import { buildRails, heroGames, searchGames, similarGames, supportsPlayerCount, type Rail as RailData } from "./lib/rails.ts";
 import { rankByVotes } from "./lib/votes.ts";
 import { useGameNight } from "./lib/GameNightContext.tsx";
-import { useSelectedGameId } from "./lib/route.ts";
+import { useIsHeadsUpRoute, useSelectedGameId } from "./lib/route.ts";
 import { useLibrary } from "./lib/useLibrary.ts";
 import { GameCard } from "./components/GameCard.tsx";
 import { GameModal } from "./components/GameModal.tsx";
 import { Header } from "./components/Header.tsx";
+import { HeadsUp } from "./components/HeadsUp.tsx";
 import { Hero } from "./components/Hero.tsx";
+import { MobileGamesRail } from "./components/MobileGamesRail.tsx";
 import { Rail } from "./components/Rail.tsx";
 import { StarterSpinner } from "./components/StarterSpinner.tsx";
 import { unlockAudio } from "./lib/spinSound.ts";
 
 export function App() {
   const state = useLibrary();
+  const headsUp = useIsHeadsUpRoute();
 
+  if (headsUp) return <HeadsUp />;
   if (state.status === "loading") return <p className="status">Hämtar spelhyllan…</p>;
   if (state.status === "error") return <p className="status">Kunde inte läsa spelen ({state.message}).</p>;
   return <Browse games={state.library.games} />;
@@ -88,8 +92,11 @@ export function Browse({ games }: { games: Game[] }) {
             <Hero games={heroGames(visible)} />
             <div className="rails">
               {voteRail && <Rail rail={voteRail} />}
-              {rails.map((rail) => (
-                <Rail key={rail.id} rail={rail} />
+              {rails.map((rail, i) => (
+                <Fragment key={rail.id}>
+                  <Rail rail={rail} />
+                  {i === 0 && <MobileGamesRail />}
+                </Fragment>
               ))}
             </div>
           </>
