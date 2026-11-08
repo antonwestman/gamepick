@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import sample from "../data/sample-games.json";
 import { App, Browse } from "./App.tsx";
 import type { GameLibrary } from "./lib/game.ts";
-import { tiltOf, wordsForRound } from "./lib/headsUp.ts";
+import { gameReducer, NEW_GAME, tiltOf, wordsForRound, type Action } from "./lib/headsUp.ts";
 import { DECKS, type Deck } from "./lib/headsUpDecks.ts";
 
 const { games } = sample satisfies GameLibrary;
@@ -131,6 +131,30 @@ describe("Heads Up", () => {
     expect(screen.getByRole("button", { name: "Nästa: Nördarna" })).toBeInTheDocument();
   });
 
+  it("runs out of a deck instead of repeating words", async () => {
+    const user = setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: /Djur/ }));
+    await skipCountdown();
+
+    const words = new Set<string>();
+    for (const _ of deck("djur").words.sv.medium) {
+      words.add(currentWordText() ?? "");
+      await user.click(screen.getByRole("button", { name: "Rätt" }));
+      await act(() => vi.advanceTimersByTimeAsync(800));
+    }
+    expect(words.size).toBe(deck("djur").words.sv.medium.length);
+
+    expect(screen.getByRole("heading", { name: "20 rätt!" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Spela igen" })).not.toBeInTheDocument();
+    expect(screen.getByText(/Slut på ord i Djur/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Byt kategori" }));
+    expect(screen.getByRole("button", { name: /Djur/ })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: /Nytt spel/ }));
+    expect(screen.getByRole("button", { name: /Djur/ })).toBeEnabled();
+  });
+
   it("counts a nod down as correct and back as pass, once per nod", async () => {
     const user = setup();
     render(<App />);
@@ -150,17 +174,30 @@ describe("Heads Up", () => {
   });
 });
 
-describe("wordsForRound", () => {
-  it("skips words already played, until the deck runs low", () => {
-    const animals = deck("djur");
-    const seen = animals.words.sv.hard.slice(0, 5).map((word) => ({ word, answer: "pass" as const }));
-    const words = wordsForRound(animals, "sv", "hard", [{ team: null, results: seen }]);
-    expect(words).toHaveLength(animals.words.sv.hard.length - 5);
+describe("seen words", () => {
+  const animals = deck("djur");
+  const play = (...actions: Action[]) => actions.reduce(gameReducer, NEW_GAME);
+  const start: Action = { type: "start", deck: animals, team: null, words: ["Älg", "Haj", "Uggla"], now: 0 };
 
-    const almostAll = animals.words.sv.hard.slice(0, 15).map((word) => ({ word, answer: "pass" as const }));
-    expect(wordsForRound(animals, "sv", "hard", [{ team: null, results: almostAll }])).toHaveLength(
-      animals.words.sv.hard.length,
-    );
+  it("counts the word on screen when time runs out", () => {
+    const game = play(start, { type: "begin" }, { type: "answer", answer: "correct", now: 0 }, { type: "unflash" }, {
+      type: "timeUp",
+    });
+    expect(game.seen).toEqual(["Älg", "Haj"]);
+    expect(game.played).toHaveLength(1);
+  });
+
+  it("counts words from an abandoned round, without scoring it", () => {
+    const game = play(start, { type: "begin" }, { type: "answer", answer: "pass", now: 0 }, { type: "quit" });
+    expect(game.seen).toEqual(["Älg", "Haj"]);
+    expect(game.played).toEqual([]);
+  });
+
+  it("never offers a seen word again, even when few are left", () => {
+    const all = animals.words.sv.hard;
+    expect(wordsForRound(animals, "sv", "hard", all.slice(0, 17))).toEqual(expect.arrayContaining(all.slice(17)));
+    expect(wordsForRound(animals, "sv", "hard", all.slice(0, 17))).toHaveLength(3);
+    expect(wordsForRound(animals, "sv", "hard", all)).toEqual([]);
   });
 });
 

@@ -55,7 +55,7 @@ och luta nedåt för rätt, uppåt för pass. 60 sekunder per runda. Utan rörel
 trycker man på höger/vänster halva av skärmen i stället.
 
 Välj språk på orden (svenska/engelska), svårighet (Lätt/Medel/Svår) och lägg till lag om ni vill tävla: lagen turas om och poängen räknas ihop.
-Ord som redan kommit under kvällen kommer inte igen. Inställningarna sparas i telefonen.
+Inget ord kommer två gånger under ett spel (även ord man passat, avbrutit eller inte hann med räknas som sedda) – tar en kategori slut väljer man en annan eller trycker **Nytt spel**. Inställningarna sparas i telefonen.
 Orden ligger i [`src/lib/headsUpDecks.ts`](src/lib/headsUpDecks.ts), uppdelade per kategori och svårighet.
 
 ## Hur det funkar

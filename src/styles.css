@@ -322,8 +322,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .headsup__segments .chip { flex: 1; height: 42px; font-size: 0.95rem; }
 .headsup__teams { justify-content: flex-start; margin: 0 0 10px; }
 .headsup__note-small { margin: 8px 0 0; color: var(--muted); font-size: 0.85rem; }
-.headsup__turn { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
-.headsup__turn p { margin: 0; }
+.headsup__turn { margin: 12px 0 0; }
 .headsup__scores { width: 100%; margin: 16px 0; border-collapse: collapse; }
 .headsup__scores caption { text-align: left; margin-bottom: 6px; font-weight: 700; }
 .headsup__scores th, .headsup__scores td { padding: 8px 14px; background: var(--surface); text-align: left; font-weight: 600; }
@@ -331,3 +330,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .headsup__scores tr + tr > * { border-top: 2px solid var(--bg); }
 .headsup__scores tr.is-leading th::after { content: " 👑"; }
 .headsup__team { margin: 0 0 8px; padding: 4px 14px; border-radius: 999px; background: rgb(0 0 0 / 0.25); font-weight: 800; }
+.headsup__decks-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin: 24px 0 10px; }
+.headsup__decks-header .headsup__label { margin: 0; }
+.headsup__left { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+.headsup__deck:disabled { opacity: 0.4; cursor: not-allowed; }
