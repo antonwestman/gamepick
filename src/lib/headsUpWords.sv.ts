@@ -141,6 +141,108 @@ export const SV = {
       "Mötet som kunde varit ett mejl", "Vi tar det i nästa sprint", "Agil transformation",
     ],
   },
+  "gaming": {
+    easy: [
+      "Super Mario", "Minecraft", "Tetris", "Pac-Man", "Fortnite", "Pokémon", "Zelda", "Sonic", "Pong", "Joystick",
+      "Handkontroll", "Playstation", "Xbox", "Nintendo Switch", "Game Boy", "Angry Birds", "Candy Crush", "The Sims",
+      "FIFA", "Roblox",
+    ],
+    medium: [
+      "Tomb Raider", "Street Fighter", "Mortal Kombat", "Donkey Kong", "Space Invaders", "Grand Theft Auto",
+      "Call of Duty", "World of Warcraft", "Counter-Strike", "Among Us", "Animal Crossing", "Mario Kart",
+      "Guitar Hero", "Wii", "Bossfight", "Extraliv", "Fuskkod", "Speedrun", "Lagg", "Sparfil",
+    ],
+    hard: [
+      "Respawn", "Noob", "Lootlåda", "Hitbox", "Grinda", "Rage quit", "Easter egg", "Sidouppdrag", "Öppen värld",
+      "Pixelgrafik", "Half-Life", "Dark Souls", "The Witcher", "Skyrim", "Baldur's Gate", "Portal", "E-sport",
+      "Twitch", "Battle royale", "Mikrotransaktion",
+    ],
+  },
+  "bradspel": {
+    easy: [
+      "Monopol", "Schack", "Fia med knuff", "Yatzy", "Memory", "Domino", "Fyra i rad", "Twister", "Uno", "Kortlek",
+      "Tärning", "Pussel", "Alfapet", "Sänka skepp", "Othello", "Backgammon", "Bingo", "Plockepinn", "Kalaha",
+      "Luffarschack",
+    ],
+    medium: [
+      "Catan", "Carcassonne", "Ticket to Ride", "Trivial Pursuit", "Cluedo", "Risk", "Pictionary", "Rummikub",
+      "Dixit", "Codenames", "Alias", "Jenga", "Mastermind", "Poker", "Bridge", "Go", "Kinaschack", "Stratego",
+      "Labyrint", "Spelplan",
+    ],
+    hard: [
+      "Wingspan", "Pandemic", "Terraforming Mars", "Azul", "Gloomhaven", "Agricola", "Dominion", "Splendor",
+      "7 Wonders", "Blood on the Clocktower", "Mahjong", "Worker placement", "Kortbyggande", "Regelbok", "Expansion",
+      "Spelledare", "Kingmaker", "Turordning", "Samarbetsspel", "Brädspelskafé",
+    ],
+  },
+  "matte": {
+    easy: [
+      "Plus", "Minus", "Gånger", "Division", "Noll", "Miniräknare", "Linjal", "Cirkel", "Triangel", "Kvadrat",
+      "Rektangel", "Udda tal", "Jämnt tal", "Hälften", "Dubbelt", "Miljon", "Procent", "Kub", "Klot",
+      "Multiplikationstabell",
+    ],
+    medium: [
+      "Pi", "Bråk", "Decimaltal", "Ekvation", "Pythagoras sats", "Primtal", "Kvadratrot", "Diagram", "Medelvärde",
+      "Vinkel", "Radie", "Diameter", "Omkrets", "Area", "Volym", "Gradskiva", "Passare", "Negativt tal",
+      "Oändlighet", "Sannolikhet",
+    ],
+    hard: [
+      "Derivata", "Integral", "Logaritm", "Fibonacci", "Gyllene snittet", "Matris", "Vektor", "Hypotenusa",
+      "Parabel", "Exponent", "Fakultet", "Standardavvikelse", "Median", "Asymptot", "Polynom", "Imaginära tal",
+      "Algebra", "Topologi", "Möbiusband", "Fraktal",
+    ],
+  },
+  "vaxter": {
+    easy: [
+      "Ros", "Tulpan", "Solros", "Kaktus", "Maskros", "Ek", "Gran", "Björk", "Palm", "Gräs", "Äppelträd", "Morot",
+      "Potatis", "Vitsippa", "Blåbärsris", "Mossa", "Lavendel", "Bambu", "Ormbunke", "Näckros",
+    ],
+    medium: [
+      "Orkidé", "Brännässla", "Murgröna", "Lönn", "Tall", "Blåklocka", "Krokus", "Hortensia", "Pion", "Kastanj",
+      "Pelargon", "Monstera", "Aloe vera", "Basilika", "Mistel", "Klöver", "Liljekonvalj", "Rabarber", "Vass",
+      "Bonsai",
+    ],
+    hard: [
+      "Fotosyntes", "Klorofyll", "Pollen", "Frö", "Rotsystem", "Stickling", "Köttätande växt", "Venusflugfälla",
+      "Sequoia", "Baobab", "Lav", "Kompost", "Ståndare", "Pistill", "Pollinering", "Växthus", "Ympning", "Perenn",
+      "Ettårig växt", "Carl von Linné",
+    ],
+  },
+  "historia": {
+    easy: [
+      "Vikingar", "Riddare", "Pyramid", "Slott", "Kung", "Drottning", "Pirat", "Cowboy", "Gladiator", "Mumie",
+      "Grottmänniska", "Stenåldern", "Svärd", "Sköld", "Kanon", "Ånglok", "Månlandningen", "Berlinmuren", "Titanic",
+      "Medeltiden",
+    ],
+    medium: [
+      "Napoleon", "Kleopatra", "Julius Caesar", "Gustav Vasa", "Karl XII", "Columbus", "Marco Polo", "Romarriket",
+      "Franska revolutionen", "Industriella revolutionen", "Kalla kriget", "Digerdöden", "Korståg", "Samuraj",
+      "Tsar", "Renässansen", "Hansan", "Upplysningen", "Runsten", "Jeanne d'Arc",
+    ],
+    hard: [
+      "Westfaliska freden", "Trettioåriga kriget", "Kalmarunionen", "Stockholms blodbad", "Hundraårskriget",
+      "Bysantinska riket", "Osmanska riket", "Inkariket", "Aztekerna", "Mesopotamien", "Feodalism", "Reformationen",
+      "Merkantilism", "Sidenvägen", "Rosettastenen", "Karl den store", "Djingis khan", "Tutankhamon",
+      "Hammurabis lagar", "Spanska armadan",
+    ],
+  },
+  "grekland": {
+    easy: [
+      "Zeus", "Olympen", "Olympiska spelen", "Trojanska hästen", "Herkules", "Medusa", "Minotauros", "Pegasus",
+      "Kyklop", "Toga", "Kolonn", "Amfiteater", "Lagerkrans", "Spartan", "Aten", "Poseidon", "Sirener",
+      "Pandoras ask", "Akilleshäl", "Maraton",
+    ],
+    medium: [
+      "Sokrates", "Platon", "Aristoteles", "Pythagoras", "Homeros", "Odysseus", "Athena", "Afrodite", "Apollon",
+      "Hades", "Hermes", "Ares", "Demokrati", "Filosofi", "Oraklet i Delfi", "Labyrinten", "Tragedi", "Amasoner",
+      "Sparta", "Kentaur",
+    ],
+    hard: [
+      "Parthenon", "Arkimedes", "Hippokrates", "Herodotos", "Thermopyle", "Perikles", "Alexander den store",
+      "Prometheus", "Ikaros", "Narkissos", "Dionysos", "Persefone", "Sisyfos", "Tantalos", "Agora", "Hoplit",
+      "Trirem", "Akademien", "Stoicism", "Odysséen",
+    ],
+  },
   "blandat": {
     easy: [
       "Midsommar", "Tomten", "Regnbåge", "Vampyr", "Snögubbe", "Robot", "Pirat", "Dinosaurie", "Vulkan",

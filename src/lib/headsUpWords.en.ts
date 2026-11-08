@@ -141,6 +141,109 @@ export const EN = {
       "Let's push it to next sprint", "This meeting could have been an email", "Boil the ocean",
     ],
   },
+  gaming: {
+    easy: [
+      "Super Mario", "Minecraft", "Tetris", "Pac-Man", "Fortnite", "Pokémon", "Zelda", "Sonic", "Pong", "Joystick",
+      "Controller", "PlayStation", "Xbox", "Nintendo Switch", "Game Boy", "Angry Birds", "Candy Crush", "The Sims",
+      "FIFA", "Roblox",
+    ],
+    medium: [
+      "Tomb Raider", "Street Fighter", "Mortal Kombat", "Donkey Kong", "Space Invaders", "Grand Theft Auto",
+      "Call of Duty", "World of Warcraft", "Counter-Strike", "Among Us", "Animal Crossing", "Mario Kart",
+      "Guitar Hero", "Wii", "Boss fight", "Extra life", "Cheat code", "Speedrun", "Lag", "Save file",
+    ],
+    hard: [
+      "Respawn", "Noob", "Loot box", "Hitbox", "Grinding", "Rage quit", "Easter egg", "Side quest", "Open world",
+      "Pixel art", "Half-Life", "Dark Souls", "The Witcher", "Skyrim", "Baldur's Gate", "Portal", "Esports",
+      "Twitch", "Battle royale", "Microtransaction",
+    ],
+  },
+  bradspel: {
+    easy: [
+      "Monopoly", "Chess", "Ludo", "Yahtzee", "Memory", "Dominoes", "Connect Four", "Twister", "Uno",
+      "Deck of cards", "Dice", "Jigsaw puzzle", "Scrabble", "Battleship", "Othello", "Backgammon", "Bingo",
+      "Pick-up sticks", "Tic-tac-toe", "Snakes and ladders",
+    ],
+    medium: [
+      "Catan", "Carcassonne", "Ticket to Ride", "Trivial Pursuit", "Cluedo", "Risk", "Pictionary", "Rummikub",
+      "Dixit", "Codenames", "Taboo", "Jenga", "Mastermind", "Poker", "Bridge", "Go", "Chinese checkers", "Stratego",
+      "Labyrinth", "Game board",
+    ],
+    hard: [
+      "Wingspan", "Pandemic", "Terraforming Mars", "Azul", "Gloomhaven", "Agricola", "Dominion", "Splendor",
+      "7 Wonders", "Blood on the Clocktower", "Mahjong", "Worker placement", "Deck building", "Rulebook",
+      "Expansion", "Game master", "Kingmaker", "Turn order", "Co-op game", "Board game café",
+    ],
+  },
+  matte: {
+    easy: [
+      "Plus", "Minus", "Times", "Division", "Zero", "Calculator", "Ruler", "Circle", "Triangle", "Square",
+      "Rectangle", "Odd number", "Even number", "Half", "Double", "Million", "Percent", "Cube", "Sphere",
+      "Times table",
+    ],
+    medium: [
+      "Pi", "Fraction", "Decimal", "Equation", "Pythagorean theorem", "Prime number", "Square root", "Graph",
+      "Average", "Angle", "Radius", "Diameter", "Circumference", "Area", "Volume", "Protractor", "Compass",
+      "Negative number", "Infinity", "Probability",
+    ],
+    hard: [
+      "Derivative", "Integral", "Logarithm", "Fibonacci", "Golden ratio", "Matrix", "Vector", "Hypotenuse",
+      "Parabola", "Exponent", "Factorial", "Standard deviation", "Median", "Asymptote", "Polynomial",
+      "Imaginary number", "Algebra", "Topology", "Möbius strip", "Fractal",
+    ],
+  },
+  vaxter: {
+    easy: [
+      "Rose", "Tulip", "Sunflower", "Cactus", "Dandelion", "Oak", "Spruce", "Birch", "Palm tree", "Grass",
+      "Apple tree", "Carrot", "Potato", "Daisy", "Blueberry bush", "Moss", "Lavender", "Bamboo", "Fern",
+      "Water lily",
+    ],
+    medium: [
+      "Orchid", "Stinging nettle", "Ivy", "Maple", "Pine", "Bluebell", "Crocus", "Hydrangea", "Peony",
+      "Chestnut tree", "Geranium", "Monstera", "Aloe vera", "Basil", "Mistletoe", "Clover", "Lily of the valley",
+      "Rhubarb", "Reed", "Bonsai",
+    ],
+    hard: [
+      "Photosynthesis", "Chlorophyll", "Pollen", "Seed", "Root system", "Cutting", "Carnivorous plant",
+      "Venus flytrap", "Sequoia", "Baobab", "Lichen", "Compost", "Stamen", "Pistil", "Pollination", "Greenhouse",
+      "Grafting", "Perennial", "Annual plant", "Carl Linnaeus",
+    ],
+  },
+  historia: {
+    easy: [
+      "Vikings", "Knight", "Pyramid", "Castle", "King", "Queen", "Pirate", "Cowboy", "Gladiator", "Mummy", "Caveman",
+      "Stone Age", "Sword", "Shield", "Cannon", "Steam train", "Moon landing", "Berlin Wall", "Titanic",
+      "Middle Ages",
+    ],
+    medium: [
+      "Napoleon", "Cleopatra", "Julius Caesar", "Henry VIII", "Joan of Arc", "Columbus", "Marco Polo",
+      "Roman Empire", "French Revolution", "Industrial Revolution", "Cold War", "Black Death", "Crusades", "Samurai",
+      "Tsar", "Renaissance", "Hanseatic League", "Enlightenment", "Rune stone", "Magna Carta",
+    ],
+    hard: [
+      "Peace of Westphalia", "Thirty Years' War", "Hundred Years' War", "Wars of the Roses", "Byzantine Empire",
+      "Ottoman Empire", "Inca Empire", "Aztecs", "Mesopotamia", "Feudalism", "Reformation", "Mercantilism",
+      "Silk Road", "Rosetta Stone", "Charlemagne", "Genghis Khan", "Tutankhamun", "Code of Hammurabi",
+      "Boston Tea Party", "Spanish Armada",
+    ],
+  },
+  grekland: {
+    easy: [
+      "Zeus", "Mount Olympus", "Olympic Games", "Trojan Horse", "Hercules", "Medusa", "Minotaur", "Pegasus",
+      "Cyclops", "Toga", "Column", "Amphitheatre", "Laurel wreath", "Spartan", "Athens", "Poseidon", "Sirens",
+      "Pandora's box", "Achilles' heel", "Marathon",
+    ],
+    medium: [
+      "Socrates", "Plato", "Aristotle", "Pythagoras", "Homer", "Odysseus", "Athena", "Aphrodite", "Apollo", "Hades",
+      "Hermes", "Ares", "Democracy", "Philosophy", "Oracle of Delphi", "Labyrinth", "Tragedy", "Amazons", "Sparta",
+      "Centaur",
+    ],
+    hard: [
+      "Parthenon", "Archimedes", "Hippocrates", "Herodotus", "Thermopylae", "Pericles", "Alexander the Great",
+      "Prometheus", "Icarus", "Narcissus", "Dionysus", "Persephone", "Sisyphus", "Tantalus", "Agora", "Hoplite",
+      "Trireme", "The Academy", "Stoicism", "The Odyssey",
+    ],
+  },
   blandat: {
     easy: [
       "Christmas", "Santa Claus", "Rainbow", "Vampire", "Snowman", "Robot", "Pirate", "Dinosaur", "Volcano", "Ghost",
