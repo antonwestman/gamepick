@@ -34,7 +34,12 @@ describe("Heads Up", () => {
   });
 
   const setup = () => userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-  const skipCountdown = () => act(() => vi.advanceTimersByTimeAsync(3_000));
+  /** Waits for each screen like a player would – the round starts after an async permission check. */
+  const skipCountdown = async () => {
+    await screen.findByText("Sätt telefonen i pannan!");
+    await act(() => vi.advanceTimersByTimeAsync(3_000));
+    await screen.findByRole("region", { name: "Spelar" });
+  };
   const endRound = () => act(() => vi.advanceTimersByTimeAsync(60_000));
 
   it("is listed under Mobilspel on the browse page", () => {
@@ -48,8 +53,6 @@ describe("Heads Up", () => {
     render(<App />);
 
     await user.click(screen.getByRole("button", { name: /Djur/ }));
-    expect(screen.getByText("Sätt telefonen i pannan!")).toBeInTheDocument();
-
     await skipCountdown();
     expect(deck("djur").words.medium).toContain(currentWordText()); // medium is the default
 
@@ -92,7 +95,7 @@ describe("Heads Up", () => {
     expect(screen.getByText(/Nu spelar/)).toHaveTextContent("Nu spelar Nördarna");
 
     await user.click(screen.getByRole("button", { name: /Yrken/ }));
-    expect(screen.getByText("Nördarna")).toBeInTheDocument();
+    expect(await screen.findByText("Nördarna")).toBeInTheDocument();
     await skipCountdown();
     await user.click(screen.getByRole("button", { name: "Rätt" }));
     await endRound();
