@@ -1,15 +1,18 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import sample from "../data/sample-games.json";
 import { App, Browse } from "./App.tsx";
+import { parseWordList } from "./lib/customDecks.ts";
+import { GameNightProvider } from "./lib/GameNightContext.tsx";
 import type { GameLibrary } from "./lib/game.ts";
 import { gameReducer, NEW_GAME, tiltOf, wordsForRound, type Action } from "./lib/headsUp.ts";
-import { DECKS, type Deck } from "./lib/headsUpDecks.ts";
+import { DECKS, type BuiltInDeck } from "./lib/headsUpDecks.ts";
+import { fakeGameNightServer, GAME_NIGHT_URL } from "./test/fakeGameNight.ts";
 
 const { games } = sample satisfies GameLibrary;
 
-function deck(id: string): Deck {
+function deck(id: string): BuiltInDeck {
   const found = DECKS.find((d) => d.id === id);
   if (!found) throw new Error(`No deck ${id}`);
   return found;
@@ -171,6 +174,111 @@ describe("Heads Up", () => {
 
     expect(screen.getByRole("heading", { name: "1 rätt!" })).toBeInTheDocument();
     expect(within(screen.getByRole("list", { name: "Ord" })).getAllByRole("listitem")).toHaveLength(2);
+  });
+});
+
+describe("Heads Up – own categories", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    window.localStorage.clear();
+    window.location.hash = "#/mobilspel/heads-up";
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  const renderShared = () =>
+    render(
+      <GameNightProvider url={GAME_NIGHT_URL}>
+        <App />
+      </GameNightProvider>,
+    );
+  const jargon = { id: "custom-1", title: "Kontorsprat", emoji: "💼", by: "Pontus", words: ["Synergi", "Bolla", "Landa", "Förankra", "Stämma av"] };
+
+  it("are hidden without a shared sheet", () => {
+    render(<App />);
+    expect(screen.queryByText("Egna kategorier")).not.toBeInTheDocument();
+  });
+
+  it("can be made, saved for everyone and played", async () => {
+    const server = fakeGameNightServer();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    renderShared();
+
+    await user.click(await screen.findByRole("button", { name: "Ny kategori" }));
+    await user.type(screen.getByRole("textbox", { name: "Namn" }), "Kontorsprat");
+    await user.type(screen.getByRole("textbox", { name: /Ord/ }), "Synergi{Enter}Bolla{Enter}Landa{Enter}Förankra");
+    expect(screen.getByText(/4 ord – minst 5 behövs/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Spara" })).toBeDisabled();
+
+    await user.type(screen.getByRole("textbox", { name: /Ord/ }), "{Enter}Stämma av{Enter}synergi");
+    expect(screen.getByText("5 ord")).toBeInTheDocument(); // the duplicate doesn't count
+    await user.click(screen.getByRole("button", { name: "Spara" }));
+
+    const mine = screen.getByRole("list", { name: "Egna kategorier" });
+    expect(within(mine).getByRole("button", { name: /^Kontorsprat/ })).toHaveTextContent("5 ord");
+    await waitFor(() =>
+      expect(server.state().customDecks).toEqual([
+        expect.objectContaining({ title: "Kontorsprat", emoji: "📝", words: ["Synergi", "Bolla", "Landa", "Förankra", "Stämma av"] }),
+      ]),
+    );
+
+    await user.click(within(mine).getByRole("button", { name: /^Kontorsprat/ }));
+    await screen.findByText("Sätt telefonen i pannan!");
+    await act(() => vi.advanceTimersByTimeAsync(3_000));
+    await screen.findByRole("region", { name: "Spelar" });
+    expect(jargon.words).toContain(currentWordText());
+  });
+
+  it("can be filled from an uploaded text file", async () => {
+    fakeGameNightServer();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    renderShared();
+
+    await user.click(await screen.findByRole("button", { name: "Ny kategori" }));
+    const file = new File(["Deep dive, Quick win, Circle back, Synergi, Pivot, Alignment"], "Jargong.txt", { type: "text/plain" });
+    await user.upload(screen.getByLabelText("Ladda upp fil"), file);
+
+    expect(await screen.findByText("6 ord")).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Namn" })).toHaveValue("Jargong");
+    expect(screen.getByRole("textbox", { name: /Ord/ })).toHaveValue("Deep dive\nQuick win\nCircle back\nSynergi\nPivot\nAlignment");
+  });
+
+  it("shows other people's categories and lets anyone change or remove them", async () => {
+    const server = fakeGameNightServer();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    renderShared();
+    await screen.findByRole("button", { name: "Ny kategori" });
+
+    server.update({ action: "saveDeck", ...jargon });
+    fireEvent(window, new Event("focus")); // what a poll would do
+    const mine = await screen.findByRole("list", { name: "Egna kategorier" });
+    expect(await within(mine).findByRole("button", { name: /^Kontorsprat/ })).toHaveTextContent("av Pontus · 5 ord");
+
+    await user.click(within(mine).getByRole("button", { name: "Ändra Kontorsprat" }));
+    await user.clear(screen.getByRole("textbox", { name: "Namn" }));
+    await user.type(screen.getByRole("textbox", { name: "Namn" }), "Konsultsnack");
+    await user.click(screen.getByRole("button", { name: "Spara" }));
+    await waitFor(() => expect(server.state().customDecks?.map((d) => d.title)).toEqual(["Konsultsnack"]));
+
+    await user.click(screen.getByRole("button", { name: "Ändra Konsultsnack" }));
+    await user.click(screen.getByRole("button", { name: "Ta bort" }));
+    await user.click(screen.getByRole("button", { name: "Ja, ta bort för alla" }));
+    await waitFor(() => expect(server.state().customDecks).toEqual([]));
+    expect(screen.queryByRole("button", { name: /^Konsultsnack/ })).not.toBeInTheDocument();
+  });
+});
+
+describe("parseWordList", () => {
+  it("takes one word per line, or commas on a single line", () => {
+    expect(parseWordList(" Synergi \n\nBolla\r\nLanda av  något\n")).toEqual(["Synergi", "Bolla", "Landa av något"]);
+    expect(parseWordList("Deep dive, Quick win,Pivot")).toEqual(["Deep dive", "Quick win", "Pivot"]);
+    expect(parseWordList("Ja, absolut\nNej")).toEqual(["Ja, absolut", "Nej"]);
+  });
+
+  it("drops duplicates regardless of case", () => {
+    expect(parseWordList("Synergi\nsynergi\nSYNERGI\nBolla")).toEqual(["Synergi", "Bolla"]);
   });
 });
 

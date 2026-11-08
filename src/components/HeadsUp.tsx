@@ -14,7 +14,9 @@ import {
   type Played,
   type Round,
 } from "../lib/headsUp.ts";
-import { DECKS, DIFFICULTIES, LANGUAGES, type Deck } from "../lib/headsUpDecks.ts";
+import { DECKS, DIFFICULTIES, LANGUAGES, playerDeck, type Deck, type PlayerDeck } from "../lib/headsUpDecks.ts";
+import { useGameNight } from "../lib/GameNightContext.tsx";
+import { CustomDeckEditor } from "./CustomDeckEditor.tsx";
 import { useHeadsUpSettings, type Settings } from "../lib/headsUpSettings.ts";
 import { requestTiltPermission, useTilt, useWakeLock } from "../lib/useTilt.ts";
 
@@ -50,6 +52,10 @@ export function HeadsUp() {
   const [{ round, played, seen }, dispatch] = useReducer(gameReducer, NEW_GAME);
   const [settings, setSettings] = useHeadsUpSettings();
   const [tiltAllowed, setTiltAllowed] = useState(true);
+  /** Which category is open in the editor: null = none, { deck: null } = a new one. */
+  const [editing, setEditing] = useState<{ deck: PlayerDeck | null } | null>(null);
+  const gameNight = useGameNight();
+  const customDecks = gameNight?.customDecks?.map(playerDeck) ?? null;
   const upNext = nextTeam(settings.teams, played);
 
   const wordsLeft = (deck: Deck) => unseenWords(deck, settings.language, settings.difficulty, seen).length;
@@ -84,7 +90,15 @@ export function HeadsUp() {
 
   return (
     <div className="headsup">
-      {round === null && (
+      {round === null && editing !== null && gameNight && (
+        <CustomDeckEditor
+          deck={editing.deck}
+          onSave={gameNight.saveDeck}
+          onDelete={gameNight.deleteDeck}
+          onClose={() => setEditing(null)}
+        />
+      )}
+      {round === null && editing === null && (
         <Setup
           settings={settings}
           onSettingsChange={changeSettings}
@@ -94,6 +108,8 @@ export function HeadsUp() {
           wordsLeft={wordsLeft}
           onNewGame={() => dispatch({ type: "newGame" })}
           onPick={start}
+          customDecks={customDecks}
+          onEditDeck={(deck) => setEditing({ deck })}
         />
       )}
       {round?.phase === "countdown" && <Countdown startsAt={round.startsAt} team={round.team} onQuit={quit} />}
@@ -122,9 +138,15 @@ type SetupProps = {
   wordsLeft: (deck: Deck) => number;
   onNewGame: () => void;
   onPick: (deck: Deck) => void;
+  /** null when there's no shared sheet (or it's too old) to keep them in. */
+  customDecks: PlayerDeck[] | null;
+  /** null = make a new one. */
+  onEditDeck: (deck: PlayerDeck | null) => void;
 };
 
-function Setup({ settings, onSettingsChange, played, upNext, hasSeenWords, wordsLeft, onNewGame, onPick }: SetupProps) {
+function Setup(props: SetupProps) {
+  const { settings, onSettingsChange, played, upNext, hasSeenWords, wordsLeft, onNewGame, onPick } = props;
+  const { customDecks, onEditDeck } = props;
   const teamGame = isTeamGame(settings.teams);
   return (
     <section className="headsup__pick" aria-labelledby="headsup-title">
@@ -189,22 +211,65 @@ function Setup({ settings, onSettingsChange, played, upNext, hasSeenWords, words
         )}
       </div>
       <ul className="headsup__decks">
-        {DECKS.map((deck) => {
-          const left = wordsLeft(deck);
-          return (
-            <li key={deck.id}>
-              <button type="button" className="headsup__deck" onClick={() => onPick(deck)} disabled={left === 0}>
+        {DECKS.map((deck) => (
+          <li key={deck.id}>
+            <DeckButton deck={deck} left={wordsLeft(deck)} showLeft={hasSeenWords} onPick={onPick} />
+          </li>
+        ))}
+      </ul>
+
+      {customDecks && (
+        <>
+          <h2 className="headsup__label">Egna kategorier</h2>
+          <ul className="headsup__decks" aria-label="Egna kategorier">
+            {customDecks.map((deck) => (
+              <li key={deck.id} className="headsup__custom">
+                <DeckButton deck={deck} left={wordsLeft(deck)} showLeft={hasSeenWords} onPick={onPick} />
+                <button
+                  type="button"
+                  className="headsup__edit"
+                  aria-label={`Ändra ${deck.title}`}
+                  onClick={() => onEditDeck(deck)}
+                >
+                  ✏️
+                </button>
+              </li>
+            ))}
+            <li>
+              <button type="button" className="headsup__deck headsup__deck--new" onClick={() => onEditDeck(null)}>
                 <span className="headsup__emoji" aria-hidden="true">
-                  {deck.emoji}
+                  ＋
                 </span>
-                {deck.title}
-                {hasSeenWords && <span className="headsup__left">{left === 0 ? "Slut på ord" : `${left} ord kvar`}</span>}
+                Ny kategori
               </button>
             </li>
-          );
-        })}
-      </ul>
+          </ul>
+        </>
+      )}
     </section>
+  );
+}
+
+type DeckButtonProps = { deck: Deck; left: number; showLeft: boolean; onPick: (deck: Deck) => void };
+
+function DeckButton({ deck, left, showLeft, onPick }: DeckButtonProps) {
+  return (
+    <button type="button" className="headsup__deck" onClick={() => onPick(deck)} disabled={left === 0}>
+      <span className="headsup__emoji" aria-hidden="true">
+        {deck.emoji}
+      </span>
+      {deck.title}
+      {showLeft ? (
+        <span className="headsup__left">{left === 0 ? "Slut på ord" : `${left} ord kvar`}</span>
+      ) : (
+        deck.kind === "custom" && (
+          <span className="headsup__left">
+            {deck.by ? `av ${deck.by} · ` : ""}
+            {deck.words.length} ord
+          </span>
+        )
+      )}
+    </button>
   );
 }
 

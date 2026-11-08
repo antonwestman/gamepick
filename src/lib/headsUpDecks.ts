@@ -1,3 +1,4 @@
+import { DEFAULT_EMOJI, type CustomDeck } from "./customDecks.ts";
 import { EN } from "./headsUpWords.en.ts";
 import { SV } from "./headsUpWords.sv.ts";
 
@@ -41,14 +42,32 @@ export type Words = Record<DeckId, Record<Difficulty, readonly string[]>>;
 
 const WORDS: Record<Language, Words> = { sv: SV, en: EN };
 
-export type Deck = {
+export type BuiltInDeck = {
+  kind: "builtIn";
   id: DeckId;
   title: string;
   emoji: string;
   words: Record<Language, Record<Difficulty, readonly string[]>>;
 };
 
-export const DECKS: readonly Deck[] = DECK_INFO.map((info) => ({
+/** A player's own category: one word list, whatever language it's written in, used at every difficulty. */
+export type PlayerDeck = { kind: "custom"; id: string; title: string; emoji: string; by: string; words: readonly string[] };
+
+export type Deck = BuiltInDeck | PlayerDeck;
+
+export const DECKS: readonly BuiltInDeck[] = DECK_INFO.map((info) => ({
+  kind: "builtIn",
   ...info,
   words: { sv: WORDS.sv[info.id], en: WORDS.en[info.id] },
 }));
+
+export const playerDeck = (deck: CustomDeck): PlayerDeck => ({
+  kind: "custom",
+  ...deck,
+  emoji: deck.emoji || DEFAULT_EMOJI,
+});
+
+/** The words to play: language and difficulty only apply to the built-in decks. */
+export function deckWords(deck: Deck, language: Language, difficulty: Difficulty): readonly string[] {
+  return deck.kind === "custom" ? deck.words : deck.words[language][difficulty];
+}

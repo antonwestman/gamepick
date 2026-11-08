@@ -1,4 +1,4 @@
-import type { Deck, Difficulty, Language } from "./headsUpDecks.ts";
+import { deckWords, type Deck, type Difficulty, type Language } from "./headsUpDecks.ts";
 
 export const COUNTDOWN_MS = 3_000;
 export const ROUND_MS = 60_000;
@@ -121,7 +121,7 @@ export function teamScores(teams: readonly string[], played: readonly Played[]) 
 /** The words in a deck nobody has seen yet this game. */
 export function unseenWords(deck: Deck, language: Language, difficulty: Difficulty, seen: readonly string[]): string[] {
   const used = new Set(seen);
-  return deck.words[language][difficulty].filter((word) => !used.has(word));
+  return deckWords(deck, language, difficulty).filter((word) => !used.has(word));
 }
 
 /**

@@ -8,7 +8,13 @@ export const GAME_NIGHT_URL = "https://script.example/exec";
  * installed as `fetch`. `shared: false` mimics the first, votes-only script.
  */
 export function fakeGameNightServer(initial: Partial<GameNightState> = {}, { shared = true } = {}) {
-  let state: GameNightState = { votes: [], players: shared ? [] : null, spin: null, ...initial };
+  let state: GameNightState = {
+    votes: [],
+    players: shared ? [] : null,
+    spin: null,
+    customDecks: shared ? [] : null,
+    ...initial,
+  };
   const body = () => (shared ? state : { votes: state.votes });
 
   vi.stubGlobal("fetch", async (url: string, init?: RequestInit) => {

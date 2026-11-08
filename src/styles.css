@@ -334,3 +334,28 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .headsup__decks-header .headsup__label { margin: 0; }
 .headsup__left { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
 .headsup__deck:disabled { opacity: 0.4; cursor: not-allowed; }
+.headsup__custom { position: relative; }
+.headsup__edit {
+  position: absolute; top: 6px; right: 6px; width: 34px; height: 34px; border: 0; border-radius: 50%;
+  background: rgb(0 0 0 / 0.25); font-size: 0.9rem;
+}
+.headsup__deck--new { background: transparent; border: 2px dashed var(--surface-2); color: var(--muted); }
+.headsup__deck--new:hover { color: var(--text); border-color: var(--muted); }
+.headsup__editor { display: flex; flex-direction: column; gap: 12px; }
+.headsup__editor .headsup__back { align-self: flex-start; border: 0; background: none; padding: 0; font: inherit; }
+.headsup__editor .headsup__how { margin-bottom: 0; }
+.headsup__editor-row { display: flex; gap: 12px; }
+.headsup__field { display: flex; flex-direction: column; flex: 1; }
+.headsup__field .headsup__label { margin: 0 0 6px; }
+.headsup__field--emoji { flex: 0 0 80px; }
+.headsup__field input, .headsup__field textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--surface-2); border-radius: 10px;
+  background: var(--surface); color: var(--text); font: inherit; font-size: 1rem;
+}
+.headsup__field--emoji input { text-align: center; font-size: 1.4rem; padding: 6px; }
+.headsup__field textarea { resize: vertical; min-height: 180px; line-height: 1.4; }
+.headsup__editor-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.headsup__editor-meta .headsup__note-small { margin: 0; }
+.headsup__upload { position: relative; overflow: hidden; display: inline-flex; align-items: center; padding: 0 14px; white-space: nowrap; cursor: pointer; }
+.headsup__upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.headsup__upload:focus-within { outline: 2px solid var(--text); outline-offset: 2px; }
